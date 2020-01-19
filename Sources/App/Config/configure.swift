@@ -25,7 +25,9 @@ public func configure(_ config: inout Config, _ env: inout Environment, _ servic
     
     let router = EngineRouter.default()
     try routes(router)
+    
     services.register(router, as: Router.self)
+    services.register(LogMiddleware.self)
 
     // MARK: - Middleware configs
     
@@ -33,11 +35,11 @@ public func configure(_ config: inout Config, _ env: inout Environment, _ servic
      Register middlewares
      1. Create _empty_ middleware config
      2. Catches errors and converts to HTTP response
-     3. middleware. Enables sessions for all request.
+     3. Logging middleware: Register before ErrorMiddelare so the LogMiddleware logs the original request from the client unmodified by other middleware.
      4. Register the middlewares
      */
     var middlewares = MiddlewareConfig() // 1
-    
+    middlewares.use(LogMiddleware.self) // 3
     middlewares.use(ErrorMiddleware.self) // 2
     middlewares.use(FileMiddleware.self) // Serves files from `Public/` directory
     services.register(middlewares) // 4

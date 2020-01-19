@@ -96,6 +96,7 @@ public func configure(_ config: inout Config, _ env: inout Environment, _ servic
     var migrations = MigrationConfig()
     // 1
     migrations.add(migration: UserType.self, database: .psql)
+    migrations.add(migration: TimePeriod.self, database: .psql)
     migrations.add(model: User.self, database: .psql)
     migrations.add(model: Token.self, database: .psql)
     migrations.add(model: Product.self, database: .psql)
@@ -104,6 +105,20 @@ public func configure(_ config: inout Config, _ env: inout Environment, _ servic
     migrations.add(model: Category.self, database: .psql)
     migrations.add(model: CategoryLanguagePivot.self, database: .psql)
     migrations.add(model: ProductCategoryPivot.self, database: .psql)
+    migrations.add(model: Address.self, database: .psql)
+    migrations.add(model: UserAddressPivot.self, database: .psql)
+    migrations.add(model: PlacedOrder.self, database: .psql)
+    migrations.add(model: OrderItemPivot.self, database: .psql)
+    migrations.add(model: City.self, database: .psql)
+    migrations.add(model: PickUpStop.self, database: .psql)
+    migrations.add(model: Customer.self, database: .psql)
+    migrations.add(model: PickUp.self, database: .psql)
+    migrations.add(model: PickUpOrder.self, database: .psql)
+    migrations.add(model: HomeDelivery.self, database: .psql)
+    migrations.add(model: HomeDeliveryOrder.self, database: .psql)
+    migrations.add(model: OrderAddressPivot.self, database: .psql)
+ 
+
 
     migrations.add(migration: AdminUser.self, database: .psql)  // 2
     services.register(migrations)

@@ -1,21 +1,17 @@
 //
-//  CategoryLanguagePivot.swift
+//  HomeDeliveryOrder.swift
 //  App
 //
 //  Created by Sötnos on 19.1.2020.
 //
 
-//
-//  ProductTranslation.swift
-//  App
-//
-//  Created by Sötnos on 18.1.2020.
-//
+
+
 import Foundation
 import Vapor
 import FluentPostgreSQL
 
-// MARK: - Class Represents the CategoryLanguagePivot Moddel
+// MARK: - Class Represents the HomeDeliveryOrder Model
 
 /*
  1. Define a new object that conforms to PostgreSQLUUIDPivot. This is a helper protocol on top of Fluent's Pivot protocol.
@@ -31,49 +27,51 @@ import FluentPostgreSQL
 /**
  # Contains the Pivot model to manage the sibling relationship
  Class contains properties to hold:
- - ID : Optional id property that stores the ID of the model assigned by the database when it's saved.
- - languageID
- - categoryID
- - category: The name of the category
- - description: The description of the category
+ - id : Unique identifier of the model
+ - placedOrderID
+ - homeDeliveryID
+ - note: A note about the pickUp
+ - finalDeliveryFee: The final fee of the delivery
+ - status: Status of the delivery
+ - createdAt: TheTimestamp of the moment when the object was created
+
   */
  
-final class CategoryLanguagePivot : PostgreSQLUUIDPivot { // 1
+final class HomeDeliveryOrder : PostgreSQLUUIDPivot { // 1
     // 2
     var id : UUID?
     // 3
-    var languageID : Language.ID
-    var categoryID : Category.ID
-    var category: String
-    var description: String
+    var placedOrderID : PlacedOrder.ID
+    var homeDeliveryID : HomeDelivery.ID
+    var note: String
+    var finalDeliveryFee: Float
+    var status: String
+    var createdAt: Date?
    
     // 5
-    typealias Left = Language
-    typealias Right = Category
+    typealias Left = PlacedOrder
+    typealias Right = HomeDelivery
     // 6
-    static let leftIDKey: LeftIDKey = \.languageID
-    static let rightIDKey: RightIDKey = \.categoryID
-    
+    static let leftIDKey: LeftIDKey = \.placedOrderID
+    static let rightIDKey: RightIDKey = \.homeDeliveryID
     
     // 7 Init
-    init(languageID: Language, categoryID: Category, category: String, description: String) throws {
+    init(placedOrderID: PlacedOrder, homeDeliveryID: HomeDelivery, note: String, finalDeliveryFee: Float, status: String) throws {
         
-        self.languageID = try languageID.requireID()
-        self.categoryID = try categoryID.requireID()
-        self.category = category
-        self.description = description
-   
+        self.placedOrderID = try placedOrderID.requireID()
+        self.homeDeliveryID = try homeDeliveryID.requireID()
+        self.note = note
+        self.finalDeliveryFee = finalDeliveryFee
+        self.status = status
 
     }
     
+    // Fluent will automatically manage these records
+    static var createdAtKey: TimestampKey? = \.createdAt
+    
 }
-extension CategoryLanguagePivot: Pivot {} // 8
-
 // MARK: - Extensions
-
-extension CategoryLanguagePivot: Codable {} // Conform the Fluent's Model
-extension CategoryLanguagePivot : Content {} // Conform Content
-extension CategoryLanguagePivot : Parameter {} // Conform Parameter
+extension HomeDeliveryOrder: Pivot {} // 8
 
 
 // MARK: - Foreign Ket Constraints
@@ -88,13 +86,13 @@ extension CategoryLanguagePivot : Parameter {} // Conform Parameter
  6. Add a reference between the id property on pivot model and the id property on another model. This sets up the foreign key constraint. Also set the schema reference action for deletion when deleting the model.
  */
 
-extension CategoryLanguagePivot: Migration {// 1
+extension HomeDeliveryOrder: Migration {// 1
     
     static func prepare(on connection: PostgreSQLConnection) -> Future<Void> { // 2
         return Database.create(self, on: connection) { builder in // 3
             try addProperties(to: builder) // 4
-            builder.reference(from: \.languageID, to: \Language.id, onDelete: ._cascade) // 5
-            builder.reference(from: \.categoryID, to: \Category.id, onDelete: .cascade) // 6
+            builder.reference(from: \.placedOrderID, to: \PlacedOrder.id, onDelete: ._cascade) // 5
+            builder.reference(from: \.homeDeliveryID, to: \HomeDelivery.id, onDelete: .cascade) // 6
         }
     }
     

@@ -180,7 +180,7 @@ struct CategoryController : RouteCollection {
                 
                 return pairs.map { product, translation -> ProductWithTranslation in // 9
                 
-                    ProductWithTranslation(id: product.id, price: product.price, productTranslation: translation) // 10
+                    ProductWithTranslation(id: product.id, price: product.price, images: product.images, productTranslation: translation) // 10
                 }
             }
         }

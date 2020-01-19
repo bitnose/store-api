@@ -15,11 +15,13 @@ import Vapor
  # Data type for the full product info in specific language
  - productID
  - price
+ - images 
  - productTranslation
  */
 
 struct ProductWithTranslation: Content {
     let id: UUID?
-    let price : Double
+    let price : Float
+    let images : [String]
     let productTranslation: ProductLanguagePivot
 }

@@ -22,16 +22,9 @@ import FluentPostgreSQL
  8. Confrom to Pivot.
 */
 
-/**
- # Contains the Pivot model to manage the sibling relationship
- Class contains properties to hold:
- - ID : Optional id property that stores the ID of the model assigned by the database when it's saved.
- - deletedAt: A property for Fluent to store the date you performed a soft delete on the model.
- - createdAt: A property for Fluent to store the date object was created.
- - updatedAt: A property for Fluent to store the date object was updated.
- - price: The selling price of the obejct.
- - images: Array of links to the images of the product.
-  */
+
+// Contains the Pivot model to manage the sibling relationship
+  
  
 final class ProductCategoryPivot: PostgreSQLUUIDPivot { // 1
     // 2

@@ -94,9 +94,15 @@ extension User : Parameter {} // Conform Parameter
 extension User {
     
     // Children
-
+    var placedOrders : Children<User, PlacedOrder> { // 1
+        return children(\.userID) // 2
+    }
+    
+    var customerData : Children<User, Customer> {return children(\.userID)}
+    
     
     // Siblings
+    var addresses: Siblings<User, Address, UserAddressPivot> { return siblings()}
                    
     
 }

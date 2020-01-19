@@ -1,21 +1,16 @@
 //
-//  CategoryLanguagePivot.swift
+//  UserAddress.swift
 //  App
 //
 //  Created by Sötnos on 19.1.2020.
 //
 
-//
-//  ProductTranslation.swift
-//  App
-//
-//  Created by Sötnos on 18.1.2020.
-//
+
 import Foundation
 import Vapor
 import FluentPostgreSQL
 
-// MARK: - Class Represents the CategoryLanguagePivot Moddel
+// MARK: - Class Represents the UserAddressPivot Model
 
 /*
  1. Define a new object that conforms to PostgreSQLUUIDPivot. This is a helper protocol on top of Fluent's Pivot protocol.
@@ -32,48 +27,40 @@ import FluentPostgreSQL
  # Contains the Pivot model to manage the sibling relationship
  Class contains properties to hold:
  - ID : Optional id property that stores the ID of the model assigned by the database when it's saved.
- - languageID
- - categoryID
- - category: The name of the category
- - description: The description of the category
+ - userID : id of the user
+ - addressID : id of the address
+ - createdAt: A property for Fluent to store the date object was created.
   */
  
-final class CategoryLanguagePivot : PostgreSQLUUIDPivot { // 1
+final class UserAddressPivot : PostgreSQLUUIDPivot { // 1
     // 2
     var id : UUID?
     // 3
-    var languageID : Language.ID
-    var categoryID : Category.ID
-    var category: String
-    var description: String
+    var userID : User.ID
+    var addressID : Address.ID
+    var createdAt: Date?
    
     // 5
-    typealias Left = Language
-    typealias Right = Category
+    typealias Left = User
+    typealias Right = Address
     // 6
-    static let leftIDKey: LeftIDKey = \.languageID
-    static let rightIDKey: RightIDKey = \.categoryID
-    
+    static let leftIDKey: LeftIDKey = \.userID
+    static let rightIDKey: RightIDKey = \.addressID
     
     // 7 Init
-    init(languageID: Language, categoryID: Category, category: String, description: String) throws {
+    init(_ userID: User, _ addressID: Address) throws {
         
-        self.languageID = try languageID.requireID()
-        self.categoryID = try categoryID.requireID()
-        self.category = category
-        self.description = description
-   
+        self.userID = try userID.requireID()
+        self.addressID = try addressID.requireID()
 
     }
     
+    // Fluent will automatically manage these records
+       static var createdAtKey: TimestampKey? = \.createdAt
+    
 }
-extension CategoryLanguagePivot: Pivot {} // 8
-
 // MARK: - Extensions
-
-extension CategoryLanguagePivot: Codable {} // Conform the Fluent's Model
-extension CategoryLanguagePivot : Content {} // Conform Content
-extension CategoryLanguagePivot : Parameter {} // Conform Parameter
+extension UserAddressPivot: ModifiablePivot {} // 8
 
 
 // MARK: - Foreign Ket Constraints
@@ -88,13 +75,13 @@ extension CategoryLanguagePivot : Parameter {} // Conform Parameter
  6. Add a reference between the id property on pivot model and the id property on another model. This sets up the foreign key constraint. Also set the schema reference action for deletion when deleting the model.
  */
 
-extension CategoryLanguagePivot: Migration {// 1
+extension UserAddressPivot: Migration {// 1
     
     static func prepare(on connection: PostgreSQLConnection) -> Future<Void> { // 2
         return Database.create(self, on: connection) { builder in // 3
             try addProperties(to: builder) // 4
-            builder.reference(from: \.languageID, to: \Language.id, onDelete: ._cascade) // 5
-            builder.reference(from: \.categoryID, to: \Category.id, onDelete: .cascade) // 6
+            builder.reference(from: \.userID, to: \User.id, onDelete: ._cascade) // 5
+            builder.reference(from: \.addressID, to: \Address.id, onDelete: .cascade) // 6
         }
     }
     

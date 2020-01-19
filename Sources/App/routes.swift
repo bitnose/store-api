@@ -20,4 +20,13 @@ public func routes(_ router: Router) throws {
     
     let categoryController = CategoryController() // 1
     try router.register(collection: categoryController) // 2
+    
+    let addressController = AddressController()
+    try router.register(collection: addressController)
+    
+    let cityController = CityController()
+    try router.register(collection: cityController)
+    
+    let homeDeliveryController = HomeDeliveryController()
+    try router.register(collection: homeDeliveryController)
 }

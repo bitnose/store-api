@@ -129,7 +129,7 @@ struct ProductController : RouteCollection {
                 .unwrap(or: Abort(.notFound)) // 6
                 .map(to: ProductWithTranslation.self) { result in // 7
                 
-                return try ProductWithTranslation(id: product.requireID(), price: product.price, productTranslation: result) // 8
+                    return try ProductWithTranslation(id: product.requireID(), price: product.price, images: product.images, productTranslation: result) // 8
                 
             }
         }
@@ -164,7 +164,7 @@ struct ProductController : RouteCollection {
             
             return translationProductsPairs.map { translation, product -> ProductWithTranslation in // 8
                 
-                ProductWithTranslation(id: product.id, price: product.price, productTranslation: translation) // 9
+                ProductWithTranslation(id: product.id, price: product.price, images: product.images, productTranslation: translation) // 9
                 
             }
         }

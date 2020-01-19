@@ -150,12 +150,7 @@ struct ProductController : RouteCollection {
      5. Sort the results in ascending order based on the name property.
      6. Decode also the another model which was joined to the query. The query will return an array of tuples.
      7. Return all the matching results and unwrap the returned futures.
-     8. Return an arrray of ProductWithTranslation models by mapping the returned data and creating an ProductWithTranslation objects using the fetched data.
-     9.
-     
-     6. Unwrap an Optional value contained inside a Future’s expectation. If the optional resolves to nil (.none), the supplied error will be thrown instead.
-     7. Unwrap the returned futures.
-     8. Create a new instance of model with the fetched data and return it.
+     8. Return an arrray of ProductWithTranslation models by mapping the returned data and  9. creating an ProductWithTranslation objects using the fetched data.
     */
     func getAllProductsWithTranslations(_ req: Request) throws -> Future<[ProductWithTranslation]> {
          

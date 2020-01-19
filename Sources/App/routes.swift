@@ -17,4 +17,7 @@ public func routes(_ router: Router) throws {
      
     let languageController = LanguageController() // 1
     try router.register(collection: languageController) // 2
+    
+    let categoryController = CategoryController() // 1
+    try router.register(collection: categoryController) // 2
 }

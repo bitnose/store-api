@@ -40,8 +40,6 @@ struct LanguageController : RouteCollection {
         
         tokenAuthGroup.get(Language.parameter, use: getHandler) // 1
         adminGroup.post(Language.self, use: createHandler) // 2
-
-        
     }
 
     // MARK: - Route Handlers

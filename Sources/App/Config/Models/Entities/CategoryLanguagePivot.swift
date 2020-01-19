@@ -1,4 +1,11 @@
 //
+//  CategoryLanguagePivot.swift
+//  App
+//
+//  Created by Sötnos on 19.1.2020.
+//
+
+//
 //  ProductTranslation.swift
 //  App
 //
@@ -8,7 +15,7 @@ import Foundation
 import Vapor
 import FluentPostgreSQL
 
-// MARK: - Class Represents the ProductLanguagePivot Moddel
+// MARK: - Class Represents the CategoryLanguagePivot Moddel
 
 /*
  1. Define a new object that conforms to PostgreSQLUUIDPivot. This is a helper protocol on top of Fluent's Pivot protocol.
@@ -32,43 +39,43 @@ import FluentPostgreSQL
  - images: Array of links to the images of the product.
   */
  
-final class ProductLanguagePivot : PostgreSQLUUIDPivot { // 1
+final class CategoryLanguagePivot : PostgreSQLUUIDPivot { // 1
     // 2
     var id : UUID?
     // 3
     var languageID : Language.ID
-    var productID : Product.ID
-    var productName: String
+    var categoryID : Category.ID
+    var category: String
     var description: String
-    var unit : String
-    var ingredients: String
-    var details: String
+   
     // 5
     typealias Left = Language
-    typealias Right = Product
+    typealias Right = Category
     // 6
     static let leftIDKey: LeftIDKey = \.languageID
-    static let rightIDKey: RightIDKey = \.productID
+    static let rightIDKey: RightIDKey = \.categoryID
+    
     
     // 7 Init
-    init(languageID: Language, productID: Product, productName: String, description: String, unit: String, ingredients: String, details: String) throws {
+    init(languageID: Language, categoryID: Category, category: String, description: String) throws {
         
         self.languageID = try languageID.requireID()
-        self.productID = try productID.requireID()
-        self.productName = productName
+        self.categoryID = try categoryID.requireID()
+        self.category = category
         self.description = description
-        self.unit = unit
-        self.ingredients = ingredients
-        self.details = details
+   
+
     }
+    
 }
-extension ProductLanguagePivot: Pivot {} // 8
+extension CategoryLanguagePivot: Pivot {} // 8
 
 // MARK: - Extensions
 
-extension ProductLanguagePivot: Codable {} // Conform the Fluent's Model
-extension ProductLanguagePivot : Content {} // Conform Content
-extension ProductLanguagePivot : Parameter {} // Conform Parameter
+extension CategoryLanguagePivot: Codable {} // Conform the Fluent's Model
+extension CategoryLanguagePivot : Content {} // Conform Content
+extension CategoryLanguagePivot : Parameter {} // Conform Parameter
+
 
 // MARK: - Foreign Ket Constraints
 
@@ -82,13 +89,13 @@ extension ProductLanguagePivot : Parameter {} // Conform Parameter
  6. Add a reference between the id property on pivot model and the id property on another model. This sets up the foreign key constraint. Also set the schema reference action for deletion when deleting the model.
  */
 
-extension ProductLanguagePivot: Migration {// 1
+extension CategoryLanguagePivot: Migration {// 1
     
     static func prepare(on connection: PostgreSQLConnection) -> Future<Void> { // 2
         return Database.create(self, on: connection) { builder in // 3
             try addProperties(to: builder) // 4
             builder.reference(from: \.languageID, to: \Language.id, onDelete: ._cascade) // 5
-            builder.reference(from: \.productID, to: \Product.id, onDelete: .cascade) // 6
+            builder.reference(from: \.categoryID, to: \Category.id, onDelete: .cascade) // 6
         }
     }
     

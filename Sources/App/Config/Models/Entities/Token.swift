@@ -11,12 +11,16 @@ import FluentPostgreSQL
 import Authentication
 
 
-/// Define a model for Token that contains the following properties:
-/// - id : the ID of the model
-/// - token : the token string for authentication
-/// - userID : the user ID of the token. The migration also creates a foreign key constraint with User
-/// - tokenCreatedAt : Timestamp of the moment the token was created
+// MARK: - Class Represents the Token Model
 
+/**
+ # Token
+  Define a model for Token that contains the following properties:
+    - id : the ID of the model
+    - token : the token string for authentication
+    - userID : the user ID of the token. The migration also creates a foreign key constraint with User
+    - tokenCreatedAt : Timestamp of the moment the token was created
+*/
 
 final class Token: Codable {
     var id: UUID?

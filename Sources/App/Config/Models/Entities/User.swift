@@ -10,16 +10,18 @@ import Vapor
 import FluentPostgreSQL
 import Authentication
 
-// MARK: - Class for the User
+// MARK: - Class Represents the User Model
 
-/*
- Class contains properties to hold:
+/**
+ # Class contains properties to hold:
  - ID : Optional id property that stores the ID of the model assigned by the database when it's saved
- - firstName : A First Name of the user
- - lastName : A Last Name of the user
+ - firstname : The First Name of the user
+ - lastname : The Last Name of the user
  - email : an email address of the user
- - password : a password of the user
+ - password : The password of the user
  - deletedAt: A property for Fluent to store the date you performed a soft delete on the model
+ - userCreatedAt: A property for Fluent to store the date the model was created.
+ - userUpdatedAt: A property for Fluent to store the date the model was edited.
  - usertype : Admin / Standard / Restricted
  - emailConfirmed: The boolean value whether the email address is confirmed or not: Default value is false.
 */

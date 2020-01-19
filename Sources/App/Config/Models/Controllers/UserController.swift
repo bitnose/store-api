@@ -11,8 +11,6 @@ import Vapor
 import Crypto
 import Fluent
 import Authentication
-//
-import SwiftSMTP
 
 // Define different route handlers. To access routes you must register handlers with the router. A simple way to do this is to call the functions inside your controller from routes.swift
 struct UserController : RouteCollection {
@@ -56,20 +54,23 @@ struct UserController : RouteCollection {
         
         
     }
+    
+    // MARK: - Route Handlers
 
-    /*
+    /**
      Create User Handler - Creates a new user with the given data.
         
         - parameters:
             - user: RegisterPostData Object
             - req: Request
         - throws:  CryptoError
-        - Returns: Future User.Public
+        - returns: Future User.Public
     
      1. Hash the password of the user.
      2. Create and save the user model to the database.
      3. Generate a token for the authenticated user.
      4. Save and return the token.
+     
      */
     func createHandler(_ req: Request, data: RegisterPostData) throws -> Future<Token> {
         
@@ -84,21 +85,25 @@ struct UserController : RouteCollection {
         }
      }
     
-    /* Get User Handler - Retrieves the individual user with the given ID
+    
+    
+    /**
+     # Get User Handler - Retrieves the individual user with the given ID
          
          - parameters:
             - req: Request
          - throws: Error
-         - Returns: Future User.Public
+         - returns: Future User.Public
      
-     1. Extract and return the user from the request parameter.
+     1.  Extract and return the user from the request parameter.
      */
     
     func getHandler(_ req: Request) throws -> Future<User.Public> {
-      return try req.parameters.next(User.self).convertToPublic() // 1
+      return try req.parameters.next(User.self).convertToPublic()
     }
     
-    /* Login Post Handler - Function authenticates an user and creates a Token
+    /**
+     # Login Post Handler - Function authenticates an user and creates a Token
          
          - parameters:
             - req: Request
@@ -109,11 +114,11 @@ struct UserController : RouteCollection {
      2. Generate a token for the authenticated user.
      3. Save and return the token.
      */
-    func loginHandler(_ req: Request) throws -> Future<Token> {
-       let user = try req.requireAuthenticated(User.self)
-       let token = try Token.generate(for: user)
     
-       return token.save(on: req)
+    func loginHandler(_ req: Request) throws -> Future<Token> {
+       let user = try req.requireAuthenticated(User.self) // 1
+       let token = try Token.generate(for: user) // 2
+       return token.save(on: req) // 3
         
      }
     

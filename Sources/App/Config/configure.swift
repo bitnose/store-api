@@ -96,6 +96,9 @@ public func configure(_ config: inout Config, _ env: inout Environment, _ servic
     migrations.add(migration: UserType.self, database: .psql)
     migrations.add(model: User.self, database: .psql)
     migrations.add(model: Token.self, database: .psql)
+    migrations.add(model: Product.self, database: .psql)
+    migrations.add(model: Language.self, database: .psql)
+    migrations.add(model: ProductLanguagePivot.self, database: .psql)
 
     
     migrations.add(migration: AdminUser.self, database: .psql)  // 2

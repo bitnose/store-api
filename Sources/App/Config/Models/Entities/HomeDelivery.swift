@@ -24,6 +24,7 @@ import FluentPostgreSQL
  - price: The selling price of the pick up.
  - limit: Limit how many pick ups one pick up can have
  - cityID: The city where the home delivery is available
+ - open: Boolean value which tells wheter the HomeDelivery is open / closed for new orders.
  */
 
 final class HomeDelivery : Codable {
@@ -37,15 +38,17 @@ final class HomeDelivery : Codable {
     var price : Float
     var limit: Int
     var cityID : City.ID
+    var open: Bool
     
     
     // Init User
-    init(deliveryDate: Date, timePeriod: TimePeriod, price: Float, limit: Int, cityID: City.ID) {
+    init(deliveryDate: Date, timePeriod: TimePeriod, price: Float, limit: Int, cityID: City.ID, open: Bool) {
         self.deliveryDate = deliveryDate
         self.timePeriod = timePeriod
         self.price = price
         self.limit = limit
         self.cityID = cityID
+        self.open = open
 
     }
     

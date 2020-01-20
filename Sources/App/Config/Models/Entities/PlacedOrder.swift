@@ -33,7 +33,7 @@ final class PlacedOrder : Codable {
     var totalPrice : Float
     var totalTaxes: Float
     var deliveryFee: Float
-    var status: String
+    var orderStatus: OrderStatus
     var deletedAt: Date?
     var createdAt: Date?
     var updatedAt: Date?
@@ -41,12 +41,12 @@ final class PlacedOrder : Codable {
     var isHomeDelivery: Bool
 
     // Inits
-    init(totalPrice: Float, totalTaxes: Float, deliveryFee: Float, status: String, userID : User.ID, isHomeDelivery: Bool) {
+    init(totalPrice: Float, totalTaxes: Float, deliveryFee: Float, orderStatus: OrderStatus, userID : User.ID, isHomeDelivery: Bool) {
         
         self.totalPrice = totalPrice
         self.totalTaxes = totalTaxes
         self.deliveryFee = deliveryFee
-        self.status = status
+        self.orderStatus = orderStatus
         self.userID = userID
         self.isHomeDelivery = isHomeDelivery
     }

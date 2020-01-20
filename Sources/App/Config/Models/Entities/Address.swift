@@ -67,12 +67,12 @@ extension Address: Migration {} // Conform Migrations
 
 extension Address {
     
-    // Children
+    
     var pickUpStop: Children<Address, PickUpStop> {return children(\.addressID)}
     // Siblings
     var residents: Siblings<Address, User, UserAddressPivot> { return siblings()}
 
-    var addresses: Siblings<Address, PlacedOrder, OrderAddressPivot> {return siblings()}
+    var placedOrders: Siblings<Address, PlacedOrder, OrderAddressPivot> {return siblings()}
 
     
     // Parents

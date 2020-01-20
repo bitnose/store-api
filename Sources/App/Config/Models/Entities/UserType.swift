@@ -17,12 +17,15 @@ import Vapor
  Create a new String enum type, UserType. The type conformances allow Fluent to use UserType in the database and prepare the database correctly. The type must be a String enum to conform to Codable.
 
     - admin : Full Access (Registered Users with Admin Panel)
+    - host: More than Basic Access: Alllows Users to create PickUpStops
     - standard : Basic Access (Registered Users)
     - restricted : Limited Access (Unregistered Users)
+    
  
 */
 enum UserType: String, PostgreSQLEnum, PostgreSQLMigration, Content {
     case admin
+    case host
     case standard
     case restricted
 }

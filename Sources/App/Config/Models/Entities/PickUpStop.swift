@@ -27,29 +27,22 @@ import FluentPostgreSQL
 final class PickUpStop : Codable {
     
     var id : UUID?
-    var hostName: String
-    var hostNumber: String
     var createdAt: Date?
     var updatedAt: Date?
     var cityID : City.ID
     var addressID: Address.ID
+    var userID: User.ID
     
     
     // Init User
-    init(hostName: String, hostNumber: String, cityID: City.ID, addressID: Address.ID) {
-        self.hostName = hostName
-        self.hostNumber = hostNumber
+    init(cityID: City.ID, addressID: Address.ID, userID: User.ID) {
         self.cityID = cityID
         self.addressID = addressID
+        self.userID = userID
     }
-    
-
     // Fluent will automatically manage these records
     static var createdAtKey: TimestampKey? = \.createdAt
     static var updatedAtKey : TimestampKey? = \.updatedAt
-
-    
-
 }
 
 // MARK: - Extensions
@@ -59,7 +52,6 @@ extension PickUpStop : Content {} // Conform Content
 extension PickUpStop : Parameter {} // Conform Parameter
 extension PickUpStop: Migration {} // Conform Migrations
 
-
 // MARK: - Relationships
 
 extension PickUpStop {
@@ -67,15 +59,12 @@ extension PickUpStop {
     // Parent
     var city : Parent<PickUpStop, City> {return parent(\.cityID)}
     
-    // The address of the pick up stop
+    // The address of the pickup stop
     var address: Parent<PickUpStop, Address> { return parent(\.addressID)}
+    
+    // The user who created pickup stop (=host)
+    var host: Parent<PickUpStop, User> {return parent(\.userID)}
     
     // Children
     var pickUpTimes : Children<PickUpStop, PickUp> { return children (\.pickUpStopID)}
-    
-    // Siblings
-//    var orders: Siblings<PickUp, PlacedOrder, PickUpOrder> {return siblings()}
-
-  
-    
 }

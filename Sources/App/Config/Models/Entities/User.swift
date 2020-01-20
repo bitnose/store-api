@@ -104,7 +104,8 @@ extension User {
     // Siblings
     var addresses: Siblings<User, Address, UserAddressPivot> { return siblings()}
                    
-    
+    var pickUpStop: Children<User, PickUpStop> {return children(\.userID)}
+
 }
 
 /*

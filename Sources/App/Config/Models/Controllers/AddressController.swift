@@ -56,13 +56,26 @@ struct AddressController : RouteCollection {
             - req: Request
         - throws:  CryptoError
         - Returns: Future Address
-    
-     1. Save the model on the database.
+     
+    1. In the do catch block validate the date.
+    2. Catch the errors if there were any errors.
+    3. If the error was a validationerror throw abort with the error.
+    4 Otherwise throw abort with the normal error.
+    5. Save the model on the database.
      */
     
     func createHandler(_ req: Request, data: Address) throws -> Future<Address> {
-        
-        return data.save(on: req) // 1.
+        // 1
+        do {
+            try data.validate()
+        } catch let error { // 2
+            if let error = error as? ValidationError { // 3
+                throw Abort(.badRequest, reason: "Error while validating the input data: \(error), message: \(error.reason)")
+            } else { // 4
+                throw Abort(.badRequest, reason: "\(error)")
+            }
+        }
+        return data.save(on: req) // 5
      }
     
     /**

@@ -29,7 +29,7 @@ import FluentPostgreSQL
  - deletedAt: A property for Fluent to store the date you performed a soft delete on the model.
  - createdAt: A property for Fluent to store the date object was created.
  - updatedAt: A property for Fluent to store the date object was updated.
- - price: The selling price of the obejct.
+ - price: The selling price of the obejct (Can be di)
  - quantity: Int
   */
  
@@ -101,18 +101,7 @@ extension OrderItemPivot: Migration {// 1
  */
 extension OrderItemPivot {
     
-    // Get the price of the product
-    static func calculatePrice(_ req: Request, count: Int, productID: Product.ID) throws -> Future<Float> {
-        
-        
-        return Product.find(productID, on: req).unwrap(or: Abort(.notFound)).map(to: Float.self) { foundProduct in
-                   
-            let quantity = Float(count)
-            let price = foundProduct.price * quantity
-            print("Product price: \(foundProduct.price), Quantity: \(quantity), total: \(price)" )
-            return price
-        }
-    }
+
 
 //    // Get the price of the product
 //     static func calculateTaxes(_ req: Request, count: Int, productID: Product.ID) throws -> Future<Float> {
@@ -147,7 +136,7 @@ extension OrderItemPivot {
      static func createOrderItems(_ req: Request, items: [OrderItemObject], to id: PlacedOrder.ID) throws -> Future<[OrderItemPivot]> {
            
            return items.map { orderItem in // 1
-               let orderItemPivot = OrderItemPivot(placedOrderID: id, productID: orderItem.productID, productQuantity:  orderItem.productQuantity, status: "awaitingFullfilment") // 2
+               let orderItemPivot = OrderItemPivot(placedOrderID: id, productID: orderItem.productID, productQuantity: orderItem.productQuantity, status: "awaitingFullfilment") // 2
             return orderItemPivot.save(on: req) // 3
            }.flatten(on: req) // 4
        }

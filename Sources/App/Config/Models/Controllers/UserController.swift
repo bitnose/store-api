@@ -66,22 +66,35 @@ struct UserController : RouteCollection {
         - throws:  CryptoError
         - returns: Future User.Public
     
-     1. Hash the password of the user.
-     2. Create and save the user model to the database.
-     3. Generate a token for the authenticated user.
-     4. Save and return the token.
+     1. In the do catch block validate the date.
+     2. Catch the errors if there were any errors.
+     3. If the error was a validationerror throw abort with the error.
+     4 Otherwise throw abort with the normal error.
+     5. Hash the password of the user.
+     6. Create and save the user model to the database.
+     7. Generate a token for the authenticated user.
+     8. Save and return the token.
      
      */
     func createHandler(_ req: Request, data: RegisterPostData) throws -> Future<Token> {
         
-         
-        let hashedPassword = try BCrypt.hash(data.password) // 1
+        // 1
+        do {
+            try data.validate()
+        } catch (let error) { // 2
+            if let error = error as? ValidationError { // 3
+                throw Abort(.badRequest, reason: "Error while validation input data: \(error), message: \(error.reason)")
+            } else { // 4
+                throw Abort(.badRequest, reason: "\(error)")
+            }
+        }
+        let hashedPassword = try BCrypt.hash(data.password) // 5
         
-        let user = User(firstname: data.firstname, lastname: data.lastname, email: data.email, password: hashedPassword, userType: .standard) // 2
-        return user.save(on: req).flatMap(to: Token.self) { savedUser in // 3
-            let token = try Token.generate(for: user)
-            return token.save(on: req)
-            
+        // 6
+        let user = User(firstname: data.firstname, lastname: data.lastname, email: data.email, password: hashedPassword, userType: .standard)
+        return user.save(on: req).flatMap(to: Token.self) { savedUser in
+            let token = try Token.generate(for: user) // 7
+            return token.save(on: req) // 8
         }
      }
     
@@ -95,11 +108,11 @@ struct UserController : RouteCollection {
          - throws: Error
          - returns: Future User.Public
      
-     1.  Extract and return the user from the request parameter.
+     1.  Extract and return the user from the request parameter. Conver to public version of the user.
      */
     
     func getHandler(_ req: Request) throws -> Future<User.Public> {
-      return try req.parameters.next(User.self).convertToPublic()
+      return try req.parameters.next(User.self).convertToPublic() // 1
     }
     
     /**

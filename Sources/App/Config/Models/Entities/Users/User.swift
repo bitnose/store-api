@@ -29,8 +29,8 @@ import Authentication
 final class User : Codable {
     
     var id : UUID?
-    var firstname : String
-    var lastname : String
+    var firstname : String?
+    var lastname : String?
     var email : String
     var password : String
     var deletedAt: Date?
@@ -41,7 +41,7 @@ final class User : Codable {
     
     
     // Init User
-    init(firstname: String, lastname: String, email: String, password : String,  userType: UserType) {
+    init(firstname: String?, lastname: String?, email: String, password : String,  userType: UserType) {
         self.firstname = firstname
         self.lastname = lastname
         self.email = email
@@ -67,12 +67,12 @@ final class User : Codable {
     
     final class Public: Codable {
         var id: UUID?
-        var firstname: String
-        var lastname: String
+        var firstname: String?
+        var lastname: String?
         var email : String
         var userType : UserType
         
-        init(id: UUID?, firstname: String, lastname: String, email : String, userType : UserType) {
+        init(id: UUID?, firstname: String?, lastname: String?, email : String, userType : UserType) {
             self.id = id
             self.firstname = firstname
             self.lastname = lastname

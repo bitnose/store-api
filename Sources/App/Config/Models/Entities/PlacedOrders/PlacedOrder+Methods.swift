@@ -64,7 +64,7 @@ extension PlacedOrder {
 
         // 2
         return try order.orderItemObject.map { item in
-            return try OrderItemPivot.calculatePrice(req, count: item.productQuantity, productID: item.productID)
+            return try Product.calculatePrice(req, count: item.productQuantity, productID: item.productID)
         }.flatten(on: req).flatMap(to:  PlacedOrder.self) { prices in // 3
             
             return try PlacedOrder.calculateShippingFee(on: req, from: shippingID, isHomeDelivery: order.isHomeDelivery).flatMap(to: PlacedOrder.self) { shippingFee in // 4

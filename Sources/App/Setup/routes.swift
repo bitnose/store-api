@@ -29,4 +29,14 @@ public func routes(_ router: Router) throws {
     
     let homeDeliveryController = HomeDeliveryController()
     try router.register(collection: homeDeliveryController)
+    
+    let pickUpStopController = PickUpStopController()
+    try router.register(collection: pickUpStopController)
+    
+    let pickUpController = PickUpController()
+    try router.register(collection: pickUpController)
+    
+    let placedOrderController = PlacedOrderController()
+    try router.register(collection: placedOrderController)
+    
 }

@@ -67,7 +67,7 @@ struct HomeDeliveryController : RouteCollection {
          - throws: Error
          - Returns: Future Home Delivery 
      
-     1. Extract and return the product from the request parameter.
+     1. Extract and return the model from the request parameter.
      */
     func getHandler(_ req: Request) throws -> Future<HomeDelivery> {
       return try req.parameters.next(HomeDelivery.self)  // 1.
@@ -85,6 +85,7 @@ struct HomeDeliveryController : RouteCollection {
      3. Perform a query to the HomeDelivery table to return array of HomeDeliveries.
      4. Filter based on the cityID.
      5. Filter based on the date instance (deliveryDates which are after the date)
+     5. Filter based on the boolean value "open"  
      6. Sort dates based on the deliveryDate variable.
      */
     func getDeliveriesOfCityHandler(_ req: Request) throws -> Future<[HomeDelivery]> {
@@ -96,7 +97,9 @@ struct HomeDeliveryController : RouteCollection {
 
             return try HomeDelivery.query(on: req) // 3
                 .filter(\.cityID == city.requireID()) // 4
-                .filter(\.deliveryDate > modifiedDate) // 5
+                .filter(\.deliveryDate > modifiedDate)  // 5
+                .filter(\.open == true) // 5a
+           
                 .sort(\HomeDelivery.deliveryDate, .ascending).all() // 6
         }
     }
@@ -110,7 +113,7 @@ struct HomeDeliveryController : RouteCollection {
          - throws:  CryptoError
          - Returns: Future HomeDeliveryOrder
      
-      1. Save the product on the database.
+      1. Save the model on the database.
       */
     
     func createHomeDeliveryOrder(_ req: Request, data: HomeDeliveryOrder) throws -> Future<HomeDeliveryOrder> {

@@ -56,10 +56,10 @@ final class HomeDeliveryOrder : PostgreSQLUUIDPivot { // 1
     static let rightIDKey: RightIDKey = \.homeDeliveryID
     
     // 7 Init
-    init(placedOrderID: PlacedOrder, homeDeliveryID: HomeDelivery, note: String, finalDeliveryFee: Float, status: String) throws {
+    init(placedOrderID: PlacedOrder.ID, homeDeliveryID: HomeDelivery.ID, note: String, finalDeliveryFee: Float, status: String) {
         
-        self.placedOrderID = try placedOrderID.requireID()
-        self.homeDeliveryID = try homeDeliveryID.requireID()
+        self.placedOrderID =  placedOrderID
+        self.homeDeliveryID =  homeDeliveryID
         self.note = note
         self.finalDeliveryFee = finalDeliveryFee
         self.status = status
@@ -72,6 +72,9 @@ final class HomeDeliveryOrder : PostgreSQLUUIDPivot { // 1
 }
 // MARK: - Extensions
 extension HomeDeliveryOrder: Pivot {} // 8
+extension HomeDeliveryOrder: Parameter {}
+extension HomeDeliveryOrder : Codable {}
+extension HomeDeliveryOrder : Content {}
 
 
 // MARK: - Foreign Ket Constraints
@@ -97,3 +100,33 @@ extension HomeDeliveryOrder: Migration {// 1
     }
     
 }
+
+// MARK: - STATIC METHODS
+
+extension HomeDeliveryOrder {
+
+    /**
+    # Create HomeDeliveryOrder model with the given data
+    
+    - parameters:
+       - req: Used to fetch a database connection.
+       - deliveryObject: The provided data which we use to create the Model
+       - to order: The unique identifier of the placed order
+    - throws: Throws an abort error.
+    - returns: Future Result of HomeDeliveryOrder
+    
+    1. Create an instance of HomeDeliveryOrder with the given data.
+    2. Save the model.
+    */
+    
+    static func createHomeDeliveryOrder(on req: Request, deliveryObject: HomeDeliveryOrderObject, to order: PlacedOrder) throws -> Future<HomeDeliveryOrder> {
+        // 1
+        return try HomeDeliveryOrder(placedOrderID: order.requireID(),
+                                  homeDeliveryID:  deliveryObject.homeDeliveryID,
+                                  note: deliveryObject.note,
+                                  finalDeliveryFee: order.deliveryFee,
+                                  status: "notDelivered")
+            .save(on: req) // 2
+    }
+}
+

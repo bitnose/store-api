@@ -30,7 +30,7 @@ struct AddressController : RouteCollection {
         let tokenAuthMiddleware = User.tokenAuthMiddleware() // 1
         let guardAuthMiddleware = User.guardAuthMiddleware() // 2
         let tokenAuthGroup = addressesRoute.grouped(tokenAuthMiddleware, guardAuthMiddleware) // 3
-        let adminGroup = tokenAuthGroup.grouped(AdminMiddleware()) // 4
+      //  let adminGroup = tokenAuthGroup.grouped(AdminMiddleware()) // 4
         
         /*
          1. Post Request : Post Address Model to add a new address.
@@ -57,7 +57,7 @@ struct AddressController : RouteCollection {
         - throws:  CryptoError
         - Returns: Future Address
     
-     1. Save the product on the database.
+     1. Save the model on the database.
      */
     
     func createHandler(_ req: Request, data: Address) throws -> Future<Address> {

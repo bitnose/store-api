@@ -1,15 +1,16 @@
 //
-//  OrderAddressPivot.swift
+//  UserAddress.swift
 //  App
 //
 //  Created by Sötnos on 19.1.2020.
 //
 
+
 import Foundation
 import Vapor
 import FluentPostgreSQL
 
-// MARK: - Class Represents the OrderAddressPivot Moddel
+// MARK: - Class Represents the UserAddressPivot Model
 
 /*
  1. Define a new object that conforms to PostgreSQLUUIDPivot. This is a helper protocol on top of Fluent's Pivot protocol.
@@ -26,45 +27,41 @@ import FluentPostgreSQL
  # Contains the Pivot model to manage the sibling relationship
  Class contains properties to hold:
  - ID : Optional id property that stores the ID of the model assigned by the database when it's saved.
- - placedOrderID
- - addressID
- - billingAddress : Determines whether the address is billing address or not
- - shippingAddress: Determines whether the address is shippin address or not
+ - userID : id of the user
+ - addressID : id of the address
+ - createdAt: A property for Fluent to store the date object was created.
   */
  
-final class OrderAddressPivot : PostgreSQLUUIDPivot { // 1
+final class UserAddressPivot : PostgreSQLUUIDPivot { // 1
     // 2
     var id : UUID?
     // 3
-    var placedOrderID : PlacedOrder.ID
+    var userID : User.ID
     var addressID : Address.ID
-    var billingAddress: Bool
-    var shippingAddress: Bool
-    
+ //   var createdAt: Date?
+   
     // 5
-    typealias Left = PlacedOrder
+    typealias Left = User
     typealias Right = Address
     // 6
-    static let leftIDKey: LeftIDKey = \.placedOrderID
+    static let leftIDKey: LeftIDKey = \.userID
     static let rightIDKey: RightIDKey = \.addressID
     
     // 7 Init
-    init(placedOrderID: PlacedOrder, addressID: Address, billingAddress: Bool, shippingAddress: Bool) throws {
+    init(_ userID: User, _ addressID: Address) throws {
         
-        self.placedOrderID = try placedOrderID.requireID()
+        self.userID = try userID.requireID()
         self.addressID = try addressID.requireID()
-        self.billingAddress = billingAddress
-        self.shippingAddress = shippingAddress
-   
+
     }
+    
+    // Fluent will automatically manage these records
+  //     static var createdAtKey: TimestampKey? = \.createdAt
+    
 }
-extension OrderAddressPivot: Pivot {} // 8
-
 // MARK: - Extensions
+extension UserAddressPivot: ModifiablePivot {} // 8
 
-extension OrderAddressPivot: Codable {} // Conform the Fluent's Model
-extension OrderAddressPivot : Content {} // Conform Content
-extension OrderAddressPivot : Parameter {} // Conform Parameter
 
 // MARK: - Foreign Ket Constraints
 
@@ -78,12 +75,12 @@ extension OrderAddressPivot : Parameter {} // Conform Parameter
  6. Add a reference between the id property on pivot model and the id property on another model. This sets up the foreign key constraint. Also set the schema reference action for deletion when deleting the model.
  */
 
-extension OrderAddressPivot: Migration {// 1
+extension UserAddressPivot: Migration {// 1
     
     static func prepare(on connection: PostgreSQLConnection) -> Future<Void> { // 2
         return Database.create(self, on: connection) { builder in // 3
             try addProperties(to: builder) // 4
-            builder.reference(from: \.placedOrderID, to: \PlacedOrder.id, onDelete: ._cascade) // 5
+            builder.reference(from: \.userID, to: \User.id, onDelete: ._cascade) // 5
             builder.reference(from: \.addressID, to: \Address.id, onDelete: .cascade) // 6
         }
     }

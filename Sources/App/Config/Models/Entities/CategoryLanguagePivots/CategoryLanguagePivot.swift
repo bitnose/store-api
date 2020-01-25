@@ -15,7 +15,7 @@ import Foundation
 import Vapor
 import FluentPostgreSQL
 
-// MARK: - Class Represents the CategoryLanguagePivot Moddel
+// MARK: - Struct Represents the CategoryLanguagePivot Moddel
 
 /*
  1. Define a new object that conforms to PostgreSQLUUIDPivot. This is a helper protocol on top of Fluent's Pivot protocol.

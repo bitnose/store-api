@@ -1,23 +1,22 @@
 //
-//  CustomerController.swift
+//  OrderItemController.swift
 //  App
 //
-//  Created by Sötnos on 19.1.2020.
+//  Created by Sötnos on 20.1.2020.
 //
-
 
 import Vapor
 import Fluent
 import Authentication
 
 // Define different route handlers. To access routes you must register handlers with the router. A simple way to do this is to call the functions inside your controller from routes.swift
-struct CustomerController : RouteCollection {
+struct OrderItemController : RouteCollection {
   
      // MARK: - Route Registration
      func boot(router: Router) throws {
         
-        // Grouped Routes (/api/products)
-        let customerRoutes = router.grouped("customers")
+        // Grouped Routes
+        let orderItemRoutes = router.grouped("order-items")
 
         
         // MARK: - Route Groups
@@ -30,47 +29,47 @@ struct CustomerController : RouteCollection {
         */
         let tokenAuthMiddleware = User.tokenAuthMiddleware() // 1
         let guardAuthMiddleware = User.guardAuthMiddleware() // 2
-        let tokenAuthGroup = customerRoutes.grouped(tokenAuthMiddleware, guardAuthMiddleware) // 3
-        let adminGroup = tokenAuthGroup.grouped(AdminMiddleware()) // 4
+        let tokenAuthGroup = orderItemRoutes.grouped(tokenAuthMiddleware, guardAuthMiddleware) // 3
+   //     let adminGroup = tokenAuthGroup.grouped(AdminMiddleware()) // 4
         
         /*
-         1. Get Request : Get the home delivery
-         2. Post Request : Post Home Delivery Model to add a new home delivery model
+         1. Get Request : Get the OrderItem
+         2. Post Request : Post OrderItem Model to add a new home OrderItem model
          */
-        tokenAuthGroup.get(Customer.parameter, use: getHandler) // 1
-        tokenAuthGroup.post(Customer.self, use: createHandler) // 2
+        tokenAuthGroup.get(OrderItemPivot.parameter, use: getHandler) // 1
+        tokenAuthGroup.post(OrderItemPivot.self, use: createHandler) // 2
   //      tokenAuthGroup.get(City.parameter,  use: getDeliveriesOfCityHandler)
     }
 
     // MARK: - Route Handlers
     
     /**
-     # Create New Customer Handler - Creates a new Customer with the given data.
+     # Create New OrderItem Handler - Creates a new OrderItem with the given data.
         
         - parameters:
-            - data: Customer Object
+            - data: OrderItemPivot Object
             - req: Request
         - throws:  CryptoError
-        - Returns: Future Customer
+        - Returns: Future OrderItemPivot
     
-     1. Save the customer on the database.
+     1. Save the product on the database.
      */
     
-    func createHandler(_ req: Request, data: Customer) throws -> Future<Customer> {
+    func createHandler(_ req: Request, data: OrderItemPivot) throws -> Future<OrderItemPivot> {
         return data.save(on: req) // 1.
      }
 
     /**
-     # Get Customer Handler - Retrieves the individual Customer with the given ID
+     # Get OrderItem Handler - Retrieves the individual OrderItem Up with the given ID
          
          - parameters:
             - req: Request
          - throws: Error
-         - Returns: Future Customer
+         - Returns: Future OrderItemPivot
      
-     1. Extract and return the customer from the request parameter.
+     1. Extract and return the product from the request parameter.
      */
-    func getHandler(_ req: Request) throws -> Future<Customer> {
-      return try req.parameters.next(Customer.self)  // 1.
+    func getHandler(_ req: Request) throws -> Future<OrderItemPivot> {
+      return try req.parameters.next(OrderItemPivot.self)  // 1.
     }
 }

@@ -54,10 +54,10 @@ final class PickUpOrder : PostgreSQLUUIDPivot { // 1
     static let rightIDKey: RightIDKey = \.pickUpID
     
     // 7 Init
-    init(placedOrderID: PlacedOrder, pickUpID: PickUp, note: String, finalDeliveryFee: Float, status: String) throws {
+    init(placedOrderID: PlacedOrder.ID, pickUpID: PickUp.ID, note: String, finalDeliveryFee: Float, status: String) {
         
-        self.placedOrderID = try placedOrderID.requireID()
-        self.pickUpID = try pickUpID.requireID()
+        self.placedOrderID = placedOrderID
+        self.pickUpID = pickUpID
         self.note = note
         self.finalDeliveryFee = finalDeliveryFee
         self.status = status
@@ -71,7 +71,9 @@ final class PickUpOrder : PostgreSQLUUIDPivot { // 1
 }
 // MARK: - Extensions
 extension PickUpOrder: Pivot {} // 8
-
+extension PickUpOrder: Parameter {}
+extension PickUpOrder: Content {}
+extension PickUpOrder: Encodable {}
 
 // MARK: - Foreign Ket Constraints
 
@@ -95,4 +97,33 @@ extension PickUpOrder: Migration {// 1
         }
     }
     
+}
+
+
+extension PickUpOrder {
+
+    /**
+    # Create and Save PickUpOrder model with the given data
+    
+    - parameters:
+       - req: Used to fetch a database connection.
+       - customer: The provided data what we use to create the model
+       - to order: The unique identifier of the placed order
+    - throws: Throws an abort error.
+    - returns: Future Result of PickUpOrder
+    
+    1. Create an instance of PickUpOrder with the given data.
+    2. Save the model.
+    */
+    
+    static func createPickUpOrder(on req: Request, pickUpObject: PickUpOrderObject, to order: PlacedOrder) throws -> Future<PickUpOrder> {
+        // 1
+        return try PickUpOrder(placedOrderID: order.requireID(),
+                                   pickUpID: pickUpObject.pickUpID,
+                                   note: pickUpObject.note,
+                                   finalDeliveryFee: order.deliveryFee,
+                                   status: "notShipped")
+            .save(on: req) // 2
+  
+    }
 }

@@ -54,19 +54,37 @@ extension Customer: Migration {} // Conform Migrations
 
 extension Customer {
     
-    // Children
-
-    
-    // Siblings
-    
-  //  var products: Siblings<Category, Product, ProductCategoryPivot> { return siblings()}
-    
-   
-    
     // Parents
     var placedOrder : Parent<Customer, PlacedOrder> {return parent(\.placedOrderID)}
     
     var user : Parent<Customer, User> {return parent(\.userID)}
       
+    
+}
+
+// MARK: - STATIC FUNCTIONS
+
+extension Customer {
+    
+    /**
+     # Create and save customer model with the given data
+     
+     - parameters:
+        - req: Used to fetch a database connection.
+        - customer: The provided data what we use to create a Customer
+        - to user: The unique identifier of the user who created the data
+        - to order: The unique identifier of the placed order
+     - throws: Throws an abort error.
+     - returns: Future Result of Customer
+     
+     1. Create an instance of Customer with the given data.
+     2. Save the model.
+     */
+    static func createCustomer(_ req: Request, customer: CustomerObject, to user: User.ID, to order: PlacedOrder.ID) throws -> Future<Customer> {
+        return Customer(firstname: customer.firstname, lastname: customer.lastname, email: customer.email, placedOrderID: order, userID: user) // 1
+            .save(on: req) // 2
+    }
+
+
     
 }

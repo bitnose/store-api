@@ -29,7 +29,7 @@ import FluentPostgreSQL
 final class PickUp : Codable {
     
     var id : UUID?
-    var deliveryDate: String
+    var deliveryDate: Date
     var deletedAt: Date?
     var createdAt: Date?
     var updatedAt: Date?
@@ -40,7 +40,7 @@ final class PickUp : Codable {
     var open: Bool
      
     // Init User
-    init(deliveryDate: String, timePeriod: TimePeriod, price: Float, pickUpStopID: PickUpStop.ID, limit: Int, open: Bool) {
+    init(deliveryDate: Date, timePeriod: TimePeriod, price: Float, pickUpStopID: PickUpStop.ID, limit: Int, open: Bool) {
         self.deliveryDate = deliveryDate
         self.timePeriod = timePeriod
         self.price = price

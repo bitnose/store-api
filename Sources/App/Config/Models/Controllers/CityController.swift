@@ -54,7 +54,7 @@ struct CityController : RouteCollection {
         - throws:  CryptoError
         - Returns: Future Address
     
-     1. Save the product on the database.
+     1. Save the model on the database.
      */
     func createHandler(_ req: Request, city: City) throws -> Future<City> {
         return city.save(on: req) // 1.

@@ -16,7 +16,7 @@ import FluentPostgreSQL
 /**
  # City Model
  
- Supported cities
+ 
  
 - id : UUID
 - city : The name of the city

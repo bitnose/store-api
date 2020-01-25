@@ -21,8 +21,8 @@ import Vapor
  - awaitingPickup - Products are collected and order is awaiting pickup.
  - completed – Order fulfilled and complete – requires no further action.
  - onHold – Awaiting payment – stock is reduced, but you need to confirm payment.
- - cancelled – Cancelled by an admin or the customer – stock is increased, no further action required.
- - refunded – Refunded by an admin – no further action required.
+ - cancelled – Cancelled by an admin or the customer.
+ - refunded – Refunded by an admin.
  - authenticationRequired — Awaiting action by the customer to authenticate transaction and/or complete SCA requirements.
 */
 

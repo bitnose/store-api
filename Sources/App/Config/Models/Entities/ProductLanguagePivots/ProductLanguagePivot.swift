@@ -1,15 +1,14 @@
 //
-//  OrderItemPivotswift.swift
+//  ProductTranslation.swift
 //  App
 //
-//  Created by Sötnos on 19.1.2020.
+//  Created by Sötnos on 18.1.2020.
 //
-
 import Foundation
 import Vapor
 import FluentPostgreSQL
 
-// MARK: - Class Represents the OrderItemPivot Model
+// MARK: - Class Represents the ProductLanguagePivot Moddel
 
 /*
  1. Define a new object that conforms to PostgreSQLUUIDPivot. This is a helper protocol on top of Fluent's Pivot protocol.
@@ -26,49 +25,51 @@ import FluentPostgreSQL
  # Contains the Pivot model to manage the sibling relationship
  Class contains properties to hold:
  - ID : Optional id property that stores the ID of the model assigned by the database when it's saved.
- - deletedAt: A property for Fluent to store the date you performed a soft delete on the model.
- - createdAt: A property for Fluent to store the date object was created.
- - updatedAt: A property for Fluent to store the date object was updated.
- - price: The selling price of the obejct.
- - quantity: Int
+ - languageID: Unique identifier of language
+ - productID: Unique identifier of product
+ - productName: The name of the product
+ - description: Description of the product
+ - unit: The selling unit
+ - ingredient: The ingredients of the product
   */
  
-final class OrderItemPivot : PostgreSQLUUIDPivot { // 1
+final class ProductLanguagePivot : PostgreSQLUUIDPivot { // 1
     // 2
     var id : UUID?
     // 3
-    var placedOrderID : PlacedOrder.ID
+    var languageID : Language.ID
     var productID : Product.ID
-    var productQuantity: Int
-    var status: String
-    var createdAt: Date?
- 
+    var productName: String
+    var description: String
+    var unit : String
+    var ingredients: String
+    var details: String
     // 5
-    typealias Left = PlacedOrder
+    typealias Left = Language
     typealias Right = Product
     // 6
-    static let leftIDKey: LeftIDKey = \.placedOrderID
+    static let leftIDKey: LeftIDKey = \.languageID
     static let rightIDKey: RightIDKey = \.productID
     
     // 7 Init
-    init(placedOrderID: PlacedOrder, productID: Product, productQuantity: Int, status: String) throws {
+    init(languageID: Language, productID: Product, productName: String, description: String, unit: String, ingredients: String, details: String) throws {
         
-        self.placedOrderID = try placedOrderID.requireID()
+        self.languageID = try languageID.requireID()
         self.productID = try productID.requireID()
-        self.productQuantity = productQuantity
-        self.status = status
+        self.productName = productName
+        self.description = description
+        self.unit = unit
+        self.ingredients = ingredients
+        self.details = details
     }
-    
-    // Fluent will automatically manage these records
-    static var createdAtKey: TimestampKey? = \.createdAt
 }
-extension OrderItemPivot: Pivot {} // 8
+extension ProductLanguagePivot: Pivot {} // 8
 
 // MARK: - Extensions
 
-extension OrderItemPivot: Codable {} // Conform the Fluent's Model
-extension OrderItemPivot : Content {} // Conform Content
-extension OrderItemPivot : Parameter {} // Conform Parameter
+extension ProductLanguagePivot: Codable {} // Conform the Fluent's Model
+extension ProductLanguagePivot : Content {} // Conform Content
+extension ProductLanguagePivot : Parameter {} // Conform Parameter
 
 // MARK: - Foreign Ket Constraints
 
@@ -82,12 +83,12 @@ extension OrderItemPivot : Parameter {} // Conform Parameter
  6. Add a reference between the id property on pivot model and the id property on another model. This sets up the foreign key constraint. Also set the schema reference action for deletion when deleting the model.
  */
 
-extension OrderItemPivot: Migration {// 1
+extension ProductLanguagePivot: Migration {// 1
     
     static func prepare(on connection: PostgreSQLConnection) -> Future<Void> { // 2
         return Database.create(self, on: connection) { builder in // 3
             try addProperties(to: builder) // 4
-            builder.reference(from: \.placedOrderID, to: \PlacedOrder.id, onDelete: ._cascade) // 5
+            builder.reference(from: \.languageID, to: \Language.id, onDelete: ._cascade) // 5
             builder.reference(from: \.productID, to: \Product.id, onDelete: .cascade) // 6
         }
     }

@@ -45,7 +45,7 @@ struct LanguageController : RouteCollection {
     // MARK: - Route Handlers
     
     /**
-     # Create Language Handler - Creates a new user with the given data.
+     # Create Language Handler - Creates a new model with the given data.
         
         - parameters:
             - data: Language Object
@@ -53,7 +53,7 @@ struct LanguageController : RouteCollection {
         - throws:  CryptoError
         - Returns: Future Product
     
-     1. Save the product on the database.
+     1. Save the model on the database.
      */
     
     func createHandler(_ req: Request, data: Language) throws -> Future<Language> {
@@ -69,7 +69,7 @@ struct LanguageController : RouteCollection {
          - throws: Error
          - Returns: Future Language
      
-     1. Extract and return the product from the request parameter.
+     1. Extract and return the model from the request parameter.
      */
     func getHandler(_ req: Request) throws -> Future<Language> {
       return try req.parameters.next(Language.self)  // 1.

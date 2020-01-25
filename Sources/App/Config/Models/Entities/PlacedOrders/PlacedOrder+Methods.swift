@@ -69,15 +69,15 @@ extension PlacedOrder {
             
             return try PlacedOrder.calculateShippingFee(on: req, from: shippingID, isHomeDelivery: order.isHomeDelivery).flatMap(to: PlacedOrder.self) { shippingFee in // 4
             
-                var total : Float = shippingFee // 6
+                var total : Float = shippingFee // 5
                       
-                    for price in prices {
-                        total = total + price
+                    for price in prices { // 6
+                        total = total + price // 7
                   }
                 // TODO: - Calculate total taxes
-                let taxes = Float(12)
+                let taxes = Float(12) // 8
             
-                return PlacedOrder(totalPrice: total, totalTaxes: taxes, deliveryFee: shippingFee, orderStatus: OrderStatus.pendingPayment, userID: userID, isHomeDelivery: order.isHomeDelivery).save(on: req)
+                return PlacedOrder(totalPrice: total, totalTaxes: taxes, deliveryFee: shippingFee, orderStatus: OrderStatus.pendingPayment, userID: userID, isHomeDelivery: order.isHomeDelivery).save(on: req) // )
             }
         }
     }

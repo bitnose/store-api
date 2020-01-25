@@ -41,7 +41,7 @@ final class PickUpOrder : PostgreSQLUUIDPivot { // 1
     // 3
     var placedOrderID : PlacedOrder.ID
     var pickUpID : PickUp.ID
-    var note: String
+    var note: String?
     var finalDeliveryFee: Float
     var status: String
     var createdAt: Date?
@@ -54,7 +54,7 @@ final class PickUpOrder : PostgreSQLUUIDPivot { // 1
     static let rightIDKey: RightIDKey = \.pickUpID
     
     // 7 Init
-    init(placedOrderID: PlacedOrder.ID, pickUpID: PickUp.ID, note: String, finalDeliveryFee: Float, status: String) {
+    init(placedOrderID: PlacedOrder.ID, pickUpID: PickUp.ID, note: String?, finalDeliveryFee: Float, status: String) {
         
         self.placedOrderID = placedOrderID
         self.pickUpID = pickUpID
@@ -87,18 +87,18 @@ extension PickUpOrder: Encodable {}
  6. Add a reference between the id property on pivot model and the id property on another model. This sets up the foreign key constraint. Also set the schema reference action for deletion when deleting the model.
  */
 
+
 extension PickUpOrder: Migration {// 1
     
     static func prepare(on connection: PostgreSQLConnection) -> Future<Void> { // 2
         return Database.create(self, on: connection) { builder in // 3
             try addProperties(to: builder) // 4
             builder.reference(from: \.placedOrderID, to: \PlacedOrder.id, onDelete: ._cascade) // 5
-            builder.reference(from: \.pickUpID, to: \PickUpOrder.id, onDelete: .cascade) // 6
+            builder.reference(from: \.pickUpID, to: \PickUp.id, onDelete: .cascade) // 6
         }
     }
     
 }
-
 
 extension PickUpOrder {
 

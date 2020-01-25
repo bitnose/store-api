@@ -81,6 +81,7 @@ extension Customer {
      2. Save the model.
      */
     static func createCustomer(_ req: Request, customer: CustomerObject, to user: User.ID, to order: PlacedOrder.ID) throws -> Future<Customer> {
+        
         return Customer(firstname: customer.firstname, lastname: customer.lastname, email: customer.email, placedOrderID: order, userID: user) // 1
             .save(on: req) // 2
     }

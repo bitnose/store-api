@@ -114,6 +114,7 @@ extension OrderAddressPivot {
         // TODO: - Validate the date
         
         return addresses.map { orderAddress in // 1
+     
             let orderAddressPivot = OrderAddressPivot(placedOrderID: id, addressID: orderAddress.addressID, billingAddress: orderAddress.billingAddress, shippingAddress: orderAddress.shippingAddress) // 2
             return orderAddressPivot.save(on: req) // 3
         }.flatten(on: req) // 4

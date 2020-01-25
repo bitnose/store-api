@@ -83,7 +83,7 @@ struct UserController : RouteCollection {
             try data.validate()
         } catch (let error) { // 2
             if let error = error as? ValidationError { // 3
-                throw Abort(.badRequest, reason: "Error while validation input data: \(error), message: \(error.reason)")
+                throw Abort(.badRequest, reason: "Error while validating the input data: \(error), message: \(error.reason)")
             } else { // 4
                 throw Abort(.badRequest, reason: "\(error)")
             }

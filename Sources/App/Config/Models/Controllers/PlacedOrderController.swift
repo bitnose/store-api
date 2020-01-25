@@ -123,6 +123,7 @@ struct PlacedOrderController : RouteCollection {
      
      1. Get the authenticated user from the request.
      2. Ensure that the user id is not nil.
+     2A. Try to validate the user input data.
      3. Call a static method to create a new PlacedOrder model with the given data. Unwrap the returned future.
      4. Unwrap the orderID. Throws if orderID is nil.
      5. Wait multiple different futures to resolve by calling flatMap(to:) function.
@@ -139,45 +140,53 @@ struct PlacedOrderController : RouteCollection {
      16. Print the message with the error code.
      17. Because the error occured, we reverse the whole order by calling deletePlacedOrder method. This soft deletes the PlacedOrder model and its pivot models (cascade).
      18. Throw an abort.
+     19. Catch the errors of the do block (synchronous errors) and throw abort.
  */
     func createPlacedOrderObjectHandler (_ req: Request, order: PlacedOrderObject) throws -> Future<Order> {
         
         let user = try req.requireAuthenticated(User.self) // 1
         let userID = try user.requireID() // 2
-    
+        // 2A
         do {
-        return try PlacedOrder.createPlacedOrder(req, order: order, userID: userID).flatMap(to: Order.self) { savedOrder in // 4
+            try order.validate()
+            try order.customerObject.validate()
 
-            guard let orderID = savedOrder.id else {throw Abort(.notFound)} // 4
+            return try PlacedOrder.createPlacedOrder(req, order: order, userID: userID).flatMap(to: Order.self) { savedOrder in // 4
+
+                guard let orderID = savedOrder.id else {throw Abort(.notFound)} // 4
+                
+                return flatMap(to: Order.self, // 5
+                               try OrderItemPivot.createOrderItems(req, items: order.orderItemObject, to: orderID), // 6
+                               try OrderAddressPivot.createOrderAddresses(req, addresses: order.orderAddressObject, to: orderID), // 7
+                               try Customer.createCustomer(req, customer: order.customerObject, to: userID, to: orderID)) // 8
+                    { savedItems, savedAddresses, savedCustomer in // 9
+     
+                    if order.isHomeDelivery == true { // 10
+                        // 11
+    
+                        try order.homeDeliveryOrderObject!.validate() // Validate data
+                  
+                        return try HomeDeliveryOrder.createHomeDeliveryOrder(on: req, deliveryObject: order.homeDeliveryOrderObject!, to: savedOrder).map(to: Order.self) { del in
+                             return Order(order: savedOrder, customer: savedCustomer, orderAddresses: savedAddresses, orderItems: savedItems, homeDelivery: del, pickup: nil) // 12
+                        }
+                    } else { // 13
+                        try order.pickUpOrderObject!.validate() // Validate data
+                    
             
-            return flatMap(to: Order.self, // 5
-                           try OrderItemPivot.createOrderItems(req, items: order.orderItemObject, to: orderID), // 6
-                           try OrderAddressPivot.createOrderAddresses(req, addresses: order.orderAddressObject, to: orderID), // 7
-                           try Customer.createCustomer(req, customer: order.customerObject, to: userID, to: orderID)) // 8
-                { savedItems, savedAddresses, savedCustomer in // 9
- 
-                if order.isHomeDelivery == true { // 10
-                    // 11
-                    return try HomeDeliveryOrder.createHomeDeliveryOrder(on: req, deliveryObject: order.homeDeliveryOrderObject!, to: savedOrder).map(to: Order.self) { del in
-                         return Order(order: savedOrder, customer: savedCustomer, orderAddresses: savedAddresses, orderItems: savedItems, homeDelivery: del, pickup: nil) // 12
+                        return try PickUpOrder.createPickUpOrder(on: req, pickUpObject: order.pickUpOrderObject!, to: savedOrder).map(to: Order.self) { pick in
+                            return Order(order: savedOrder, customer: savedCustomer, orderAddresses: savedAddresses, orderItems: savedItems, homeDelivery: nil, pickup: pick) // 14
+                        }
                     }
-                } else { // 13
-                    return try PickUpOrder.createPickUpOrder(on: req, pickUpObject: order.pickUpOrderObject!, to: savedOrder).map(to: Order.self) { pick in
-                        return Order(order: savedOrder, customer: savedCustomer, orderAddresses: savedAddresses, orderItems: savedItems, homeDelivery: nil, pickup: pick) // 14
+                }.catchFlatMap { error in // 15
+                    print("Error while creating an order: \(error)") // 16
+                    return try PlacedOrder.deletePlacedOrder(req, orderID: orderID).flatMap(to: Order.self) { _ in // 17
+                        print("PlacedOrder Deleted.")
+                        throw Abort(.internalServerError, reason: "Error with creating data. \(error)") // 18
                     }
                 }
-            }.catchFlatMap { error in // 15
-                print("Error while creating an order: \(error)") // 16
-                return try PlacedOrder.deletePlacedOrder(req, orderID: orderID).flatMap(to: Order.self) { _ in
-                    print("PlacedOrder Deleted.")
-                    throw Abort(.internalServerError, reason: "Error with creating data. \(error)")
-                } // 17
-                // 18
             }
-        }
-        } catch let error {
+        } catch let error { // Catch the errors
             throw Abort(.internalServerError, reason: "Error with creating data. \(error)")
-
         }
     }
 }

@@ -22,10 +22,10 @@ import Vapor
 /// 6.  If not, throw BasicValidationError.
 /// 7. Use Validation's add(_:_:) to add a custom validator for the data. This takes a readable description as the first parameter. The second parameter is a closure that should throw if validation fails.
 /// 8. If the firstname is not nil.
-/// 9. Ensure that the firstname is not an empty string and that maximum character count is less than 20, and that the string doesn't contain any special characters or numbers.
+/// 9. Ensure that the firstname is not an empty string and that maximum character count is less than 21, and that the string doesn't contain any special characters or numbers.
 /// 11. Otherwise, throw BasicValidationError with the message.
 /// 12. Use Validation's add(_:_:) to add a custom validator for the data. This takes a readable description as the first parameter. The second parameter is a closure that should throw if validation fails.
-/// 13. Ensure that the lastname is not an empty string and that maximum character count is less than 20, and that the string doesn't contain any special characters or numbers.
+/// 13. Ensure that the lastname is not an empty string and that maximum character count is less than 21, and that the string doesn't contain any special characters or numbers.
 /// 14. Otherwise, throw BasicValidationError with the message.
 /// 15. Return the validations for Vapor to test.
 
@@ -43,14 +43,14 @@ extension RegisterPostData: Validatable, Reflectable {
         }
         validations.add("First name") { model in // 7
             if model.firstname != nil { // 8
-                guard !model.firstname!.isEmpty, model.firstname!.count < 20, !model.firstname!.containsSpecialCharactersOrNumbers else { // 9
+                guard !model.firstname!.isEmpty, model.firstname!.count < 21, !model.firstname!.containsSpecialCharactersOrNumbers else { // 9
                     throw BasicValidationError("The first name can't contain special characters or numbers.") // 10
                 }
             }
         }
         validations.add("Last name") { model in // 11
             if model.lastname != nil { // 12
-                guard !model.lastname!.isEmpty, model.lastname!.count < 20, !model.lastname!.containsSpecialCharactersOrNumbers else { // 13
+                guard !model.lastname!.isEmpty, model.lastname!.count < 21, !model.lastname!.containsSpecialCharactersOrNumbers else { // 13
                     throw BasicValidationError("The first name can't contain special characters or numbers.") // 14
                 }
             }

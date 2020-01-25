@@ -94,28 +94,6 @@ extension OrderItemPivot: Migration {// 1
     
 }
 
-/**
- # Extension for Class Methods
- 
- 
- */
-extension OrderItemPivot {
-    
-
-
-//    // Get the price of the product
-//     static func calculateTaxes(_ req: Request, count: Int, productID: Product.ID) throws -> Future<Float> {
-//
-//
-//         return Product.query(on: req).filter(\.id == productID).first().unwrap(or: Abort(.notFound)).map(to: Float.self) { foundProduct in
-//
-//             let quantity = Float(count)
-//             let tax = foundProduct.tax * quantity
-//             print("Product's taxes: \(foundProduct.price), Quantity: \(quantity), total taxes: \(tax)" )
-//             return tax
-//         }
-//     }
-}
 
 extension OrderItemPivot {
     
@@ -129,13 +107,17 @@ extension OrderItemPivot {
      - returns: Future<[OrderItemPivot]>
      
      1. Map the items array through.
+     1A. Validate the data in the do-catch block before creating new models. Catch the errors if there are any.
      2. Create an instance of OrderItemPivot with the given data.
      3. Return and save the OrderItemPivot.
      4. Flattens an array of futures into a future with an array of results.
      */
      static func createOrderItems(_ req: Request, items: [OrderItemObject], to id: PlacedOrder.ID) throws -> Future<[OrderItemPivot]> {
            
-           return items.map { orderItem in // 1
+           return try items.map { orderItem in // 1
+            
+            
+            
                let orderItemPivot = OrderItemPivot(placedOrderID: id, productID: orderItem.productID, productQuantity: orderItem.productQuantity, status: "awaitingFullfilment") // 2
             return orderItemPivot.save(on: req) // 3
            }.flatten(on: req) // 4

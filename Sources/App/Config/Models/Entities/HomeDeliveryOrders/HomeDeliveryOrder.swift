@@ -43,7 +43,7 @@ final class HomeDeliveryOrder : PostgreSQLUUIDPivot { // 1
     // 3
     var placedOrderID : PlacedOrder.ID
     var homeDeliveryID : HomeDelivery.ID
-    var note: String
+    var note: String?
     var finalDeliveryFee: Float
     var status: String
     var createdAt: Date?
@@ -56,7 +56,7 @@ final class HomeDeliveryOrder : PostgreSQLUUIDPivot { // 1
     static let rightIDKey: RightIDKey = \.homeDeliveryID
     
     // 7 Init
-    init(placedOrderID: PlacedOrder.ID, homeDeliveryID: HomeDelivery.ID, note: String, finalDeliveryFee: Float, status: String) {
+    init(placedOrderID: PlacedOrder.ID, homeDeliveryID: HomeDelivery.ID, note: String?, finalDeliveryFee: Float, status: String) {
         
         self.placedOrderID =  placedOrderID
         self.homeDeliveryID =  homeDeliveryID

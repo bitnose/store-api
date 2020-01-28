@@ -8,6 +8,7 @@
 import Vapor
 import Fluent
 import Authentication
+import Pagination
 
 // Define different route handlers. To access routes you must register handlers with the router. A simple way to do this is to call the functions inside your controller from routes.swift
 struct ProductController : RouteCollection {
@@ -49,7 +50,7 @@ struct ProductController : RouteCollection {
     // MARK: - Route Handlers
     
     /**
-     # Create Product Handler - Creates a new user with the given data.
+     # Create Product Handler - Creates a new model with the given data.
         
      - parameters:
         - data: Product Object
@@ -63,8 +64,6 @@ struct ProductController : RouteCollection {
     func createHandler(_ req: Request, data: Product) throws -> Future<Product> {
         
         return data.save(on: req) // 1.
-         
-
      }
     
 
@@ -101,7 +100,7 @@ struct ProductController : RouteCollection {
     }
 
     /**
-     # Get the Translation and the Product Handler - Retrieves the individual product and its translation in the provided languaage ID
+     # Get the Translation and the Product Handler - Retrieves the individual product and its translation in the provided language ID
       
       - parameters:
          - req: Request
@@ -121,15 +120,17 @@ struct ProductController : RouteCollection {
         
         return try req.parameters.next(Product.self).flatMap(to: ProductWithTranslation.self) { product in // 1
             
-            let languageID = try req.parameters.next(UUID.self) // 2
+            let languageID = try req.parameters.next(UUID.self)// 2
+            guard let id = product.id else { return req.future(error: Abort(.internalServerError)) }
             
-            return try ProductLanguagePivot.query(on: req) // 3
-                .filter(\.productID == product.requireID()) // 4
+            
+            return ProductLanguagePivot.query(on: req) // 3
+                .filter(\.productID == id) // 4
                 .filter(\.languageID == languageID).first() // 5
                 .unwrap(or: Abort(.notFound)) // 6
                 .map(to: ProductWithTranslation.self) { result in // 7
                 
-                    return try ProductWithTranslation(id: product.requireID(), price: product.price, images: product.images, productTranslation: result) // 8
+                    return ProductWithTranslation(id: id, price: product.price, images: product.images, productTranslation: result) // 8
                 
             }
         }
@@ -160,7 +161,7 @@ struct ProductController : RouteCollection {
             .join(\Product.id, to: ProductLanguagePivot.rightIDKey) // 4
             .sort(\ProductLanguagePivot.productName, .ascending) // 5
             .alsoDecode(Product.self) // 6
-            .all().map(to: [ProductWithTranslation].self) { translationProductsPairs in // 7
+        .all().map(to: [ProductWithTranslation].self) { translationProductsPairs in // 7
             
             return translationProductsPairs.map { translation, product -> ProductWithTranslation in // 8
                 

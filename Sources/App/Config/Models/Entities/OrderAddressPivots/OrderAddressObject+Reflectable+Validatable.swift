@@ -9,6 +9,9 @@ import Foundation
 import Vapor
 
 /// # Extension for the OrderAddressObject to make it conform to Validatable and Reflectable.
+///
+/// Use this class to validate the order address object if the user has provided only one order address object.
+///
 /// - Validatable allows you to validate types with Vapor
 /// - Reflectable provides a way to discover the internal components of a type
 /// - Because you use key paths, Vapor creates type-safe validations.

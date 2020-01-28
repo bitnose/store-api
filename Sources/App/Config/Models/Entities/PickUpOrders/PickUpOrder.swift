@@ -109,7 +109,7 @@ extension PickUpOrder {
        - req: Used to fetch a database connection.
        - customer: The provided data what we use to create the model
        - to order: The unique identifier of the placed order
-    - throws: Throws an abort error.
+    - throws: Throws an abort error.c
     - returns: Future Result of PickUpOrder
     
     1. Create an instance of PickUpOrder with the given data.

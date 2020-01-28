@@ -16,8 +16,6 @@ import FluentPostgreSQL
 
  Class contains properties to hold:
  - ID : Optional id property that stores the ID of the model assigned by the database when it's saved.
- - hostName: The name of the person who hosts the pick up stop.
- - hostNumber: The phone number of the person who hosts the pick up stop.
  - createdAt: A property for Fluent to store the date object was created.
  - updatedAt: A property for Fluent to store the date object was updated.
  - cityID : The city where the pick up stop locates / is available

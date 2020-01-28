@@ -20,10 +20,10 @@ struct LoginPostData : Content {
     let password : String
 }
 
-/// # Datatype which contains data to create a new user
+/// # Datatype which contains user 
 /// - password : String
-/// - firstname : Optional
-/// - lastname : Optional
+/// - firstname : String
+/// - lastname : String
 /// - email : String
 struct RegisterPostData : Content {
     let password : String

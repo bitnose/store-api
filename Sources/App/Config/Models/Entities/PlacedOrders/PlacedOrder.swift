@@ -24,8 +24,7 @@ import FluentPostgreSQL
  - createdAt: A property for Fluent to store the date object was created.
  - updatedAt: A property for Fluent to store the date object was updated.
  - userID : The user who created the order
- - isHomeDelivery: Boolean value which determines whether the shipping type is a home delivery or a pick-up
- */
+ - isHomeDelivery: Boolean value which determines whether the shipping type is a home delivery or a pick-upPla */
 
 final class PlacedOrder : Codable {
     

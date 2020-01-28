@@ -11,6 +11,7 @@ import FluentPostgreSQL
 
 // MARK: - Class Represents the OrderAddressPivot Moddel
 
+// This class contains information about the order's addresses: The shipping address, The billing address
 /*
  1. Define a new object that conforms to PostgreSQLUUIDPivot. This is a helper protocol on top of Fluent's Pivot protocol.
  2. Define an id for the model. Note this is a UUID type so you must import the Foundationn module in the file.

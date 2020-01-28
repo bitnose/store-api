@@ -32,12 +32,15 @@ struct UserController : RouteCollection {
         let tokenAuthMiddleware = User.tokenAuthMiddleware() // 1
         let guardAuthMiddleware = User.guardAuthMiddleware() // 2
         let tokenAuthGroup = usersRoute.grouped(tokenAuthMiddleware, guardAuthMiddleware) // 3
+        let adminAuthGroup = usersRoute.grouped(AdminMiddleware())
         
         
         // 1. Get Request : Get the User.Public of the authenticated user
         // 2. Post Request : Post User Model to create a new user.
+        // 3. Put Request : Update User Model's usertype to be a host.
         tokenAuthGroup.get(User.parameter, use: getHandler) // 1
         usersRoute.post(RegisterPostData.self, use: createHandler) // 2
+        adminAuthGroup.put("host", User.parameter, use: createHostHandler) // 3
 
         
         // MARK: - BASIC AUTH
@@ -51,6 +54,8 @@ struct UserController : RouteCollection {
         
         // 1. Post Request : Post login credentials to login
         basicAuthGroup.post("login", use: loginHandler)
+        
+        
         
         
     }
@@ -130,10 +135,40 @@ struct UserController : RouteCollection {
     
     func loginHandler(_ req: Request) throws -> Future<Token> {
        let user = try req.requireAuthenticated(User.self) // 1
-       let token = try Token.generate(for: user) // 2
-       return token.save(on: req) // 3
+      
+
+        
+        do {
+           let token = try Token.generate(for: user)
+            return token.save(on: req) // 3
+        } catch let error {
+            return req.future(error: Abort(.internalServerError, reason: error.localizedDescription))
+        }// 2
+        
         
      }
+    
+    
+    /**
+     # Create Host User
+     
+        - parameters:
+            - req: Request
+        - throws: Authentication error
+        - Returns: Future Status
+     
+     1.  Get the user from the request's parameters.
+     2. Update the value of the selected user to host.
+     3. Update the changes to database and transform the returned future to a HTTPStatus code.
+     */
+    
+    func createHostHandler(_ req: Request) throws -> Future<HTTPStatus> {
+        
+        return try req.parameters.next(User.self).flatMap(to: HTTPStatus.self) { user in // 1
+            user.userType = .host // 2
+            return user.update(on: req).transform(to: .ok) // 3
+        }
+    }
     
     
     

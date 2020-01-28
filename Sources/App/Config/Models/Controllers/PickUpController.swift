@@ -103,11 +103,12 @@ struct PickUpController : RouteCollection {
         return try req.parameters.next(City.self).flatMap(to: [PickUpObject].self) { city in // 1
             
             let today = Date() // 2
-            guard let modifiedDate = Calendar.current.date(byAdding: .day, value: 3, to: today) else {throw Abort(.internalServerError)} // 3
+            guard let modifiedDate = Calendar.current.date(byAdding: .day, value: 3, to: today) else { return req.future(error: Abort(.internalServerError))} // 3
+            guard let id = city.id else { return req.future(error: Abort(.internalServerError))}
             
-            return try PickUp.query(on: req).filter(\.open == true).filter(\.deliveryDate > modifiedDate) // 4
+            return PickUp.query(on: req).filter(\.open == true).filter(\.deliveryDate > modifiedDate) // 4
                 .join(\PickUpStop.id, to: \PickUp.pickUpStopID) // 5
-                .filter(\PickUpStop.cityID == city.requireID()) // 6
+                .filter(\PickUpStop.cityID == id) // 6
                 .sort(\.deliveryDate, .ascending) // 7
                 .alsoDecode(PickUpStop.self) // 8
                 .all().flatMap(to:[PickUpObject].self) { pairs in // 9

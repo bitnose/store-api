@@ -8,6 +8,7 @@ import Foundation
 import Vapor
 import FluentPostgreSQL
 
+
 // MARK: - Class Represents the ProductLanguagePivot Moddel
 
 /*
@@ -94,3 +95,4 @@ extension ProductLanguagePivot: Migration {// 1
     }
     
 }
+

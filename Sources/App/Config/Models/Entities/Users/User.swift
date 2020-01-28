@@ -15,14 +15,14 @@ import Authentication
 /**
  # Class contains properties to hold:
  - ID : Optional id property that stores the ID of the model assigned by the database when it's saved
- - firstname : The First Name of the user
- - lastname : The Last Name of the user
+ - firstname : The Optional First Name of the user
+ - lastname : The Optional Last Name of the user
  - email : an email address of the user
  - password : The password of the user
  - deletedAt: A property for Fluent to store the date you performed a soft delete on the model
  - userCreatedAt: A property for Fluent to store the date the model was created.
  - userUpdatedAt: A property for Fluent to store the date the model was edited.
- - usertype : Admin / Standard / Restricted
+ - usertype : Admin / Standard / Restricted / Host
  - emailConfirmed: The boolean value whether the email address is confirmed or not: Default value is false.
 */
 
@@ -100,11 +100,12 @@ extension User {
     
     var customerData : Children<User, Customer> {return children(\.userID)}
     
+    var pickUpStop: Children<User, PickUpStop> {return children(\.userID)}
     
     // Siblings
     var addresses: Siblings<User, Address, UserAddressPivot> { return siblings()}
                    
-    var pickUpStop: Children<User, PickUpStop> {return children(\.userID)}
+    
 
 }
 

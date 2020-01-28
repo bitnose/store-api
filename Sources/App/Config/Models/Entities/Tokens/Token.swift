@@ -65,14 +65,15 @@ extension Token: Content {}
 
 /*
  1. Define a static function to generate a token for a user
- 2. Generate 16 random bytes to act as the token
+ 2. Generate 64 random bytes to act as the token
  3. Create a Token using the based64-encoded representation of the random bytes and the user's ID
  */
 
 extension Token {
     static func generate(for user: User) throws -> Token { // 1
-        let random = try CryptoRandom().generateData(count: 16) // 2
-        return try Token(token: random.base64EncodedString(), userID: user.requireID()) // 3
+        let random = try CryptoRandom().generateData(count: 64) // 2
+        guard let id = user.id else {throw Abort(.internalServerError, reason: "User id is nil.")}
+        return Token(token: random.base64EncodedString(), userID: id) // 3
     }
 }
 

@@ -30,7 +30,7 @@ import FluentPostgreSQL
  - id : Unique identifier of the model
  - placedOrderID
  - homeDeliveryID
- - note: A note about the pickUp
+ - note: An optional note about the pickUp 
  - finalDeliveryFee: The final fee of the delivery
  - status: Status of the delivery
  - createdAt: TheTimestamp of the moment when the object was created

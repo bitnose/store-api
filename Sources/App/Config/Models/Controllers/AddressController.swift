@@ -42,7 +42,7 @@ struct AddressController : RouteCollection {
 
         tokenAuthGroup.post(Address.self, use: createHandler) // 1
         tokenAuthGroup.get("user", use: getUsersAddressesHandler) // 2
-        tokenAuthGroup.post(Address.parameter, User.parameter, use: addAddressToUserHandler) // 3
+        tokenAuthGroup.post(Address.parameter, use: addAddressToUserHandler) // 3
         tokenAuthGroup.post(OrderAddressPivot.self, at: "orders", use: addAddressToOrderHandler) // 4
     }
 
@@ -102,11 +102,14 @@ struct AddressController : RouteCollection {
           - throws: Error
           - Returns: HTTPStatus
 
-        1. Extract and return the First Model  and the second Model from the request parameter. Unwrap the futures.
-        2. Add the first model to another model and transform to HttpStatus.
+        1. Get the authenticated user.
+        2. Extract and return the First Model from the request parameter. Unwrap the future.
+        3. Add the first model to another model and transform to HttpStatus.
         */
     func addAddressToUserHandler(_ req: Request) throws -> Future<HTTPStatus> {
-        return try flatMap(to: HTTPStatus.self, req.parameters.next(Address.self),  req.parameters.next(User.self)) { address, user in // 1
+        
+        let user = try req.requireAuthenticated(User.self)
+        return try req.parameters.next(Address.self).flatMap(to: HTTPStatus.self) { address in // 1
             return user.addresses.attach(address, on: req).transform(to: .created) // 2
         }
     }

@@ -79,6 +79,7 @@ public func configure(_ config: inout Config, _ env: inout Environment, _ servic
     // 2
     var databases = DatabasesConfig()
     databases.add(database: database, as: .psql)
+    databases.enableLogging(on: .psql)
     services.register(databases)
     
     let serverConfig = NIOServerConfig.default(hostname: "0.0.0.0")

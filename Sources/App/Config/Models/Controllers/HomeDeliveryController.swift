@@ -103,22 +103,4 @@ struct HomeDeliveryController : RouteCollection {
                 .sort(\HomeDelivery.deliveryDate, .ascending).all() // 6
         }
     }
-    
-    /**
-      # Create Home Delivery Order Handler - Creates a new Home Delivery Order with the given data.
-         
-         - parameters:
-             - data: HomeDeliveryOrder Object
-             - req: Request
-         - throws:  CryptoError
-         - Returns: Future HomeDeliveryOrder
-     
-      1. Save the model on the database.
-      */
-    
-    func createHomeDeliveryOrder(_ req: Request, data: HomeDeliveryOrder) throws -> Future<HomeDeliveryOrder> {
-        return data.save(on: req) // 1
-    }
-    
-    
 }

@@ -30,7 +30,7 @@ extension PickUpOrderObject: Validatable, Reflectable {
 
         validations.add("Note limit") { model in // 3
             if model.note != nil { // 4
-                guard model.note!.count > 101 else { throw BasicValidationError("The note is too long.") // 5
+                guard model.note!.count < 101 else { throw BasicValidationError("The note is too long.") // 5
                 }
             }
         }

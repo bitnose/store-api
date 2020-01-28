@@ -35,31 +35,13 @@ struct PlacedOrderController : RouteCollection {
         
         /*
          1. Get Request : Get the model
-         2. Post Request : Post tge model to add a new placedOrder model
+         2. Post Request : Post the model to add a new placedOrder model
          */
         tokenAuthGroup.get(PlacedOrder.parameter, use: getHandler) // 1
-        tokenAuthGroup.post(PlacedOrder.self, use: createHandler) // 2
-  //      tokenAuthGroup.get(City.parameter,  use: getDeliveriesOfCityHandler)
-        tokenAuthGroup.post(PlacedOrderObject.self, at: "order", use: createPlacedOrderObjectHandler)
+        tokenAuthGroup.post(PlacedOrderObject.self, at: "order", use: createPlacedOrderObjectHandler) // 2
     }
 
     // MARK: - Route Handlers
-    
-    /**
-     # Create New PlacedOrder Handler - Creates a new PlacedOrder with the given data.
-        
-        - parameters:
-            - data: PlacedOrder Object
-            - req: Request
-        - throws:  CryptoError
-        - Returns: Future PlacedOrder
-    
-     1. Save the model on the database.
-     */
-    
-    func createHandler(_ req: Request, data: PlacedOrder) throws -> Future<PlacedOrder> {
-        return data.save(on: req) // 1.
-     }
 
     /**
      # Get PlacedOrder Handler - Retrieves the individual PlacedOrder with the given ID
@@ -74,37 +56,6 @@ struct PlacedOrderController : RouteCollection {
     func getHandler(_ req: Request) throws -> Future<PlacedOrder> {
       return try req.parameters.next(PlacedOrder.self)  // 1.
     }
-    
-
-
-    /**
-     - UserID: Get the authenticated user from the request
-     - Total product price:
-         - Products
-             - Get the selected productIDs and unwrap the result
-             - Calculate the total price of each product
-         - Shipping Fee
-             * isHomeDelivery == true
-             * isHomeDelivery == false
-         - —> Calculate the total price
-     - Create and save the PlacedOrder model
-         - Success: Continue
-             - Create order item models
-             - Create customer item models
-             - If homeDelivery == true
-                 - Create homeDeliveryOrder model
-             - If homeDelivery == false
-                 - Create pickUpOrder model
-             - Create orderAddressModels
-                 - Loop objects
-                     - if count > 2 —> Error
-                     - Create only 1: Create when billingAddress == true && shippingAddress == true
-                     * Create max 2 models: Create when billingAddress == true && shippingAddress == false
-         - Failure: Error
-
-     
-     
-     */
     
     /**
      # Create PlacedOrder
@@ -145,7 +96,7 @@ struct PlacedOrderController : RouteCollection {
     func createPlacedOrderObjectHandler (_ req: Request, order: PlacedOrderObject) throws -> Future<Order> {
         
         let user = try req.requireAuthenticated(User.self) // 1
-        let userID = try user.requireID() // 2
+       guard let userID = user.id else { return req.future(error: Abort(.internalServerError))} // 2
         // 2A
         do {
             try order.validate()
@@ -153,7 +104,7 @@ struct PlacedOrderController : RouteCollection {
 
             return try PlacedOrder.createPlacedOrder(req, order: order, userID: userID).flatMap(to: Order.self) { savedOrder in // 4
 
-                guard let orderID = savedOrder.id else {throw Abort(.notFound)} // 4
+                guard let orderID = savedOrder.id else {return req.future(error: Abort(.internalServerError))} // 4
                 
                 return flatMap(to: Order.self, // 5
                                try OrderItemPivot.createOrderItems(req, items: order.orderItemObject, to: orderID), // 6

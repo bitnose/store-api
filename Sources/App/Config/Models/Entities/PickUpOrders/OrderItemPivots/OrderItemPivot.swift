@@ -10,6 +10,7 @@ import Vapor
 import FluentPostgreSQL
 
 // MARK: - Class Represents the OrderItemPivot Model
+// One item repserents one "SKU" object. Model a single type of items that user buys and it contains the information of quantity / how many of this product the user wants to buy. 
 
 /*
  1. Define a new object that conforms to PostgreSQLUUIDPivot. This is a helper protocol on top of Fluent's Pivot protocol.
@@ -26,10 +27,7 @@ import FluentPostgreSQL
  # Contains the Pivot model to manage the sibling relationship
  Class contains properties to hold:
  - ID : Optional id property that stores the ID of the model assigned by the database when it's saved.
- - deletedAt: A property for Fluent to store the date you performed a soft delete on the model.
  - createdAt: A property for Fluent to store the date object was created.
- - updatedAt: A property for Fluent to store the date object was updated.
- - price: The selling price of the obejct (Can be di)
  - quantity: Int
   */
  
@@ -114,11 +112,9 @@ extension OrderItemPivot {
      */
      static func createOrderItems(_ req: Request, items: [OrderItemObject], to id: PlacedOrder.ID) throws -> Future<[OrderItemPivot]> {
            
-           return try items.map { orderItem in // 1
+           return items.map { orderItem in // 1
             
-            
-            
-               let orderItemPivot = OrderItemPivot(placedOrderID: id, productID: orderItem.productID, productQuantity: orderItem.productQuantity, status: "awaitingFullfilment") // 2
+            let orderItemPivot = OrderItemPivot(placedOrderID: id, productID: orderItem.productID, productQuantity: orderItem.productQuantity, status: "awaitingFullfilment") // 2
             return orderItemPivot.save(on: req) // 3
            }.flatten(on: req) // 4
        }

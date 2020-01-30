@@ -8,7 +8,6 @@
 import Vapor
 import Fluent
 import Authentication
-import Pagination
 
 // Define different route handlers. To access routes you must register handlers with the router. A simple way to do this is to call the functions inside your controller from routes.swift
 struct ProductController : RouteCollection {

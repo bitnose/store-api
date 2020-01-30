@@ -7,11 +7,8 @@
 
 import Foundation
 import Vapor
-import Pagination
-
 
 // MARK: - Datatypes that are used to encode responses
-
 
 /**
  # Data type for the full product info in specific language
@@ -20,7 +17,6 @@ import Pagination
  - images
  - productTranslation
  */
-
 struct ProductWithTranslation: Content {
     let id: UUID?
     let price : Float

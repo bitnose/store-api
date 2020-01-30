@@ -28,7 +28,31 @@ public func configure(_ config: inout Config, _ env: inout Environment, _ servic
     
     services.register(router, as: Router.self)
     services.register(LogMiddleware.self)
+    
+    /*
+     SMTP Configure & EmailSender
+       1. Get the environment keys
+       2. Fetch the environment variables
+       3. Make a SMTPConfig instance.
+       4. Register the configured SMTPConfig.
+       5. Register EmailSender.
+       */
+    
+     Environment.dotenv(filename: "smtp-configure.env") // 1
+    // 2
+    let smtpHost = Environment.get("SMTP_HOST", "")
+    let smtpMail = Environment.get("SMTP_EMAIL", "")
+    let smtpPassword = Environment.get("SMTP_PASSWORD", "")
+    let smtpPort = Environment.get("SMTP_PORT", Int())
+    let smtpDomainName = Environment.get("DOMAIN_NAME", "")
 
+    let smtpConfig = SMTPConfig(host: smtpHost,
+                                port: smtpPort,
+                                email: smtpMail,
+                                password: smtpPassword)
+    services.register(smtpConfig)
+    services.register(EmailSender.self)
+    
     // MARK: - Middleware configs
     
     /*
@@ -119,11 +143,20 @@ public func configure(_ config: inout Config, _ env: inout Environment, _ servic
     migrations.add(model: HomeDelivery.self, database: .psql)
     migrations.add(model: HomeDeliveryOrder.self, database: .psql)
     migrations.add(model: OrderAddressPivot.self, database: .psql)
- 
-
-
-    migrations.add(migration: AdminUser.self, database: .psql)  // 2
-    services.register(migrations)
+    
+    
+    //MARK: - Migrations based on the environment
+    // 1. If the application is in either development or testing environment, (2.) add these models to migrations.
+    // 3. Otherwise these migrations won't happen.
+    
+    switch env {
+    case .development, .testing: // 1
+         migrations.add(migration: AdminUser.self, database: .psql) // 2
+    default: // 3
+        break
+    }
+    
+    services.register(migrations) // Register migrations
     
     // MARK: - Command configs
     

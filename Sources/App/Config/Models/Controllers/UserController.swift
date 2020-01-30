@@ -78,11 +78,15 @@ struct UserController : RouteCollection {
      5. Hash the password of the user.
      6. Create and save the user model to the database.
      7. Generate a token for the authenticated user.
-     8. Save and return the token.
+     8. Create a new void promise.
+     9. Make an instance of EmailSender to send an email to the user.
+     10. Dispatch synchronous work to happen on a background thread.
+     11. Call a method to send the mail to the user.
+     12. When the "blocking work" has completed, complete the promise and its associated future.
+     13. Save and return the token.
      
      */
     func createHandler(_ req: Request, data: RegisterPostData) throws -> Future<Token> {
-        
         // 1
         do {
             try data.validate()
@@ -94,16 +98,21 @@ struct UserController : RouteCollection {
             }
         }
         let hashedPassword = try BCrypt.hash(data.password) // 5
-        
         // 6
         let user = User(firstname: data.firstname, lastname: data.lastname, email: data.email, password: hashedPassword, userType: .standard)
         return user.save(on: req).flatMap(to: Token.self) { savedUser in
+            
             let token = try Token.generate(for: user) // 7
-            return token.save(on: req) // 8
+            let promise = req.eventLoop.newPromise(Void.self) // 8
+            let sender = try req.make(EmailSender.self) // 9
+
+            DispatchQueue.global().async { // 10
+                sender.send(to: savedUser.email, name: savedUser.firstname ?? "", content: "Hi \( savedUser.firstname ?? "") We are happy that you registered to our application. Happy shopping!") // 11
+                promise.succeed() // 12
+            }
+            return  token.save(on: req) // 13
         }
      }
-    
-    
     
     /**
      # Get User Handler - Retrieves the individual user with the given ID
@@ -129,23 +138,20 @@ struct UserController : RouteCollection {
          - Returns: Future Token
      
      1. Get the authenticated user from the request.
-     2. Generate a token for the authenticated user.
+     In the do  catch block catch the synchronous errors (ie. the errors thrown by a generating a token).
+     2. Generate a token for the authenticated user
      3. Save and return the token.
      */
     
     func loginHandler(_ req: Request) throws -> Future<Token> {
        let user = try req.requireAuthenticated(User.self) // 1
       
-
-        
         do {
-           let token = try Token.generate(for: user)
+            let token = try Token.generate(for: user) // 2
             return token.save(on: req) // 3
         } catch let error {
-            return req.future(error: Abort(.internalServerError, reason: error.localizedDescription))
-        }// 2
-        
-        
+            return req.future(error: error)
+        }
      }
     
     
@@ -169,9 +175,4 @@ struct UserController : RouteCollection {
             return user.update(on: req).transform(to: .ok) // 3
         }
     }
-    
-    
-    
-    
-    
 }

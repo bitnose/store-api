@@ -34,17 +34,17 @@ import Vapor
 /// 15.  If the boolean value is false ensure that homeDeliveryOrderObject is nil and that pickUpOrderObject is not nil.
 /// 16. Return validations.
 
-extension PlacedOrderObject: Validatable, Reflectable {
+extension PlacedOrderObjectV2: Validatable, Reflectable {
     
-    static func validations() throws -> Validations<PlacedOrderObject> { // 1
+    static func validations() throws -> Validations<PlacedOrderObjectV2> { // 1
         
-        var validations = Validations(PlacedOrderObject.self) // 2
+        var validations = Validations(PlacedOrderObjectV2.self) // 2
         
-        validations.add("OrderItemObjects") { model in // 3
-            guard !model.orderItemObject.isEmpty else{ throw BasicValidationError("There are no order items selected")}
-            
-            for item in model.orderItemObject { try item.validate() } // 3A
-        }
+//        validations.add("OrderItemObjects") { model in // 3
+//            guard !model.orderItemObject.isEmpty else{ throw BasicValidationError("There are no order items selected")}
+//
+//            for item in model.orderItemObject { try item.validate() } // 3A
+//        }
         
         validations.add("OrderAddressObjects") { model in // 4
             guard !model.orderAddressObject.isEmpty && model.orderAddressObject.count<3 else{ throw BasicValidationError("There are no order addresses added")}

@@ -35,17 +35,15 @@ final class HomeDelivery : Codable {
     var createdAt: Date?
     var updatedAt: Date?
     var timePeriod: TimePeriod
-    var price : Float
     var limit: Int
     var cityID : City.ID
     var open: Bool
     
     
     // Init User
-    init(deliveryDate: Date, timePeriod: TimePeriod, price: Float, limit: Int, cityID: City.ID, open: Bool) {
+    init(deliveryDate: Date, timePeriod: TimePeriod, limit: Int, cityID: City.ID, open: Bool) {
         self.deliveryDate = deliveryDate
         self.timePeriod = timePeriod
-        self.price = price
         self.limit = limit
         self.cityID = cityID
         self.open = open
@@ -79,7 +77,8 @@ extension HomeDelivery {
     var city: Parent<HomeDelivery, City> {return parent(\.cityID)}
     
     // Children
-
+    var prices : Children<HomeDelivery, Price> {return children(\.homeDeliveryID)}
+    
     
     // Siblings
     var ordersToDeliver: Siblings<HomeDelivery, PlacedOrder, HomeDeliveryOrder> {return siblings()}

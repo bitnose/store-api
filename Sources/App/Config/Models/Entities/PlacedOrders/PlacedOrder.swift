@@ -29,7 +29,7 @@ import FluentPostgreSQL
 final class PlacedOrder : Codable {
     
     var id : UUID?
-    var totalPrice : Float
+    var totalPrice : Float 
     var totalTaxes: Float
     var deliveryFee: Float
     var orderStatus: OrderStatus
@@ -37,10 +37,10 @@ final class PlacedOrder : Codable {
     var createdAt: Date?
     var updatedAt: Date?
     var userID : User.ID
-    var isHomeDelivery: Bool
+    var isHomeDelivery: Bool?
 
-    // Inits
-    init(totalPrice: Float, totalTaxes: Float, deliveryFee: Float, orderStatus: OrderStatus, userID : User.ID, isHomeDelivery: Bool) {
+    // Inits with default values 
+    init(totalPrice: Float = 0, totalTaxes: Float = 0, deliveryFee: Float = 0, orderStatus: OrderStatus = .shoppingCart, userID : User.ID, isHomeDelivery: Bool? = nil) {
         
         self.totalPrice = totalPrice
         self.totalTaxes = totalTaxes

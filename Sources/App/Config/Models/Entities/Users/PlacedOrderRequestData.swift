@@ -28,5 +28,15 @@ struct PlacedOrderObject : Content{
 }
 
 
+struct PlacedOrderObjectV2 : Content{
+    let isHomeDelivery: Bool
+    let customerObject: CustomerObject
+    let orderAddressObject: [OrderAddressObject]
+ //   let orderItemObject: [OrderItemObject]
+    let pickUpOrderObject: PickUpOrderObject?
+    let homeDeliveryOrderObject: HomeDeliveryOrderObject?
+}
+
+
 
 

@@ -101,7 +101,7 @@ extension OrderItemPivot {
         - req: Request
         - items : [OrderItemObject]
         - to id: The id of the placed order
-     - throws: Abort Error
+     - throws: AbortError: Failed Future
      - returns: Future<[OrderItemPivot]>
      
      1. Map the items array through.
@@ -114,8 +114,11 @@ extension OrderItemPivot {
            
            return items.map { orderItem in // 1
             
-            let orderItemPivot = OrderItemPivot(placedOrderID: id, productID: orderItem.productID, productQuantity: orderItem.productQuantity, status: "awaitingFullfilment") // 2
-            return orderItemPivot.save(on: req) // 3
+            let orderItemPivot = OrderItemPivot(placedOrderID: id, productID: orderItem.productID, productQuantity: orderItem.productQuantity, status: "inShoppingCart") // 2
+            return orderItemPivot.save(on: req).catchFlatMap { error in
+                print(error)
+                return req.future(error: Abort(.internalServerError, reason: "Error with saving orderItems."))
+            } // 3
            }.flatten(on: req) // 4
        }
     

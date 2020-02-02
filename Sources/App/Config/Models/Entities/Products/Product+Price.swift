@@ -9,7 +9,7 @@ import Foundation
 import Vapor
 import FluentPostgreSQL
 
-extension Product {
+//extension Product {
     
     /**
      # Method to compute the price for the order item
@@ -23,14 +23,14 @@ extension Product {
      3. Calculate the price.
      4. Return the price.
      
-     */
-    static func calculatePrice(_ req: Request, count: Int, productID: Product.ID) throws -> Future<Float> {
-        
-        return Product.find(productID, on: req).unwrap(or: Abort(.notFound)).map(to: Float.self) { foundProduct in // 1
-            let quantity = Float(count) // 2
-            let price = foundProduct.price * quantity // 3
-            return price // 4
-        }
-    }
-    
-}
+//     */
+//    static func calculatePrice(_ req: Request, count: Int, productID: Product.ID) throws -> Future<Float> {
+//
+//        return Product.find(productID, on: req).unwrap(or: Abort(.notFound)).map(to: Float.self) { foundProduct in // 1
+//            let quantity = Float(count) // 2
+//            let price = foundProduct.price * quantity // 3
+//            return price // 4
+//        }
+//    }
+//
+//}

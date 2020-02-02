@@ -19,7 +19,7 @@ import Vapor
  */
 struct ProductWithTranslation: Content {
     let id: UUID?
-    let price : Float
+    let price : Decimal
     let images : [String]
     let productTranslation: ProductLanguagePivot
 }

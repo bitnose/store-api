@@ -37,7 +37,7 @@ final class User : Codable {
     var userCreatedAt: Date?
     var userUpdatedAt: Date?
     var userType : UserType
-    var emailConfirmed: Bool = false
+  //  var emailConfirmed: Bool = false
     
     
     // Init User

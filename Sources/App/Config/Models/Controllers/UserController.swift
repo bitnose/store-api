@@ -38,9 +38,11 @@ struct UserController : RouteCollection {
         // 1. Get Request : Get the User.Public of the authenticated user
         // 2. Post Request : Post User Model to create a new user.
         // 3. Put Request : Update User Model's usertype to be a host.
+        // 4. Delete Request : Logout the user and delete the auth token. 
         tokenAuthGroup.get(User.parameter, use: getHandler) // 1
         usersRoute.post(RegisterPostData.self, use: createHandler) // 2
         adminAuthGroup.put("host", User.parameter, use: createHostHandler) // 3
+        tokenAuthGroup.delete("logout", use: logoutHandler) // 4
 
         
         // MARK: - BASIC AUTH
@@ -153,6 +155,28 @@ struct UserController : RouteCollection {
             return req.future(error: error)
         }
      }
+    
+    
+    /**
+       # Logout Handler - Function deletes the bearer token of the authenticated user.
+           
+           - parameters:
+              - req: Request
+           - throws: Authentication error
+           - Returns: Future HTTPResponseStatus
+       
+       1. Get the authenticated user from the request.
+       2. Get the bearer token from the request's headers. Unwrap it.
+       3. Make a query to user's tokens and find the matching token, and delete it, and transform to HTTPResponseStatus.
+       */
+    func logoutHandler(_ req: Request) throws -> Future<HTTPResponseStatus> {
+        
+        let user = try req.requireAuthenticated(User.self) // 1
+        guard let token = req.http.headers.bearerAuthorization?.token else { return req.future(error: Abort(.notFound, reason: "Bearer token not provided."))} // 2
+        return try user.authTokens.query(on: req).filter(\.token == token).delete().transform(to: .ok) // 3
+    }
+    
+    
     
     
     /**

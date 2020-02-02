@@ -122,14 +122,22 @@ struct ProductController : RouteCollection {
             let languageID = try req.parameters.next(UUID.self)// 2
             guard let id = product.id else { return req.future(error: Abort(.internalServerError)) }
             
-            
             return ProductLanguagePivot.query(on: req) // 3
                 .filter(\.productID == id) // 4
                 .filter(\.languageID == languageID).first() // 5
                 .unwrap(or: Abort(.notFound)) // 6
-                .map(to: ProductWithTranslation.self) { result in // 7
+                .flatMap(to: ProductWithTranslation.self) { result in // 7
                 
-                    return ProductWithTranslation(id: id, price: product.price, images: product.images, productTranslation: result) // 8
+                    return try self.getPrice(req, product: product).map(to: ProductWithTranslation.self) { price in
+                        
+                        return ProductWithTranslation(id: id, price: price, images: product.images, productTranslation: result)
+                        
+                        
+                    }
+                    
+                    
+                    
+                    // 8
                 
             }
         }
@@ -160,14 +168,43 @@ struct ProductController : RouteCollection {
             .join(\Product.id, to: ProductLanguagePivot.rightIDKey) // 4
             .sort(\ProductLanguagePivot.productName, .ascending) // 5
             .alsoDecode(Product.self) // 6
-        .all().map(to: [ProductWithTranslation].self) { translationProductsPairs in // 7
+        .all().flatMap(to: [ProductWithTranslation].self) { translationProductsPairs in // 7
             
-            return translationProductsPairs.map { translation, product -> ProductWithTranslation in // 8
+            return try translationProductsPairs.map { translation, product -> Future<ProductWithTranslation> in // 8
                 
-                ProductWithTranslation(id: product.id, price: product.price, images: product.images, productTranslation: translation) // 9
-                
-            }
+                return try self.getPrice(req, product: product).map(to: ProductWithTranslation.self) { price in
+                    return ProductWithTranslation(id: product.id, price: price, images: product.images, productTranslation: translation) // 9
+                }
+            }.flatten(on: req)
         }
     }
+    
+    
+    func getPrice(_ req: Request, product: Product) throws -> Future<Decimal> {
+        
+        let now = Date()
+        return try product.prices.query(on: req)
+            .filter(\Price.validFrom < now)
+            .filter(\Price.validUntil == nil)
+          //  .filter(\Price.currency == .CHF)
+            .first()
+            .unwrap(or: Abort(.notFound))
+            .map(to: Decimal.self) { price in
+                
+                
+                // Price in cents / in the smallest currency units, example 200cents
+                let cents = price.price
+                let convertToFullUnits = cents / 100
+                
+                return Decimal(integerLiteral: convertToFullUnits)
+          
+        }
+          
+    }
+ 
+    
+    
+    
 }
+
 

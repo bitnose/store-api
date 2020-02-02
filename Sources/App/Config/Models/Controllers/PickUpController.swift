@@ -39,7 +39,7 @@ struct PickUpController : RouteCollection {
          */
         tokenAuthGroup.get(PickUp.parameter, use: getHandler) // 1
         adminGroup.post(PickUp.self, use: createHandler) // 2
-        tokenAuthGroup.get("cities", City.parameter, use: getPickUpsWithStopsHandler)
+   //     tokenAuthGroup.get("cities", City.parameter, use: getPickUpsWithStopsHandler)
     }
 
     // MARK: - Route Handlers
@@ -97,34 +97,37 @@ struct PickUpController : RouteCollection {
      13. Create and return the another model with the fetched data.
      14. Flatten an array of futures into a future with an array of results.
     */
-    
-    func getPickUpsWithStopsHandler(_ req: Request) throws -> Future<[PickUpObject]> {
-        
-        return try req.parameters.next(City.self).flatMap(to: [PickUpObject].self) { city in // 1
-            
-            let today = Date() // 2
-            guard let modifiedDate = Calendar.current.date(byAdding: .day, value: 3, to: today) else { return req.future(error: Abort(.internalServerError))} // 3
-            guard let id = city.id else { return req.future(error: Abort(.internalServerError))}
-            
-            return PickUp.query(on: req).filter(\.open == true).filter(\.deliveryDate > modifiedDate) // 4
-                .join(\PickUpStop.id, to: \PickUp.pickUpStopID) // 5
-                .filter(\PickUpStop.cityID == id) // 6
-                .sort(\.deliveryDate, .ascending) // 7
-                .alsoDecode(PickUpStop.self) // 8
-                .all().flatMap(to:[PickUpObject].self) { pairs in // 9
-                
-                return pairs.map { pickUp, pickUpStop -> Future<PickUpObject> in // 10
-                
-                    return pickUpStop.address.get(on: req).map(to: PickUpObject.self) { address in // 11
-                        
-                        let pickUpStopObject = PickUpStopObject(id: pickUpStop.id, addressID: address.id, street: address.street, postalcode: address.postalcode, city: address.city, country: address.country) // 12
-                        
-                        return PickUpObject(pickUpID: pickUp.id, deliveryDate: pickUp.deliveryDate, timePeriod: pickUp.timePeriod, price: pickUp.price, pickUpStop: pickUpStopObject) // 13
-                        }
-                }.flatten(on: req) // 14
-            }
-        }
-    }
-    
+//
+//    func getPickUpsWithStopsHandler(_ req: Request) throws -> Future<[PickUpObject]> {
+//
+//        return try req.parameters.next(City.self).flatMap(to: [PickUpObject].self) { city in // 1
+//
+//            let today = Date() // 2
+//            guard let modifiedDate = Calendar.current.date(byAdding: .day, value: 3, to: today) else { return req.future(error: Abort(.internalServerError))} // 3
+//            guard let id = city.id else { return req.future(error: Abort(.internalServerError))}
+//
+//            return PickUp.query(on: req).filter(\.open == true).filter(\.deliveryDate > modifiedDate) // 4
+//                .join(\PickUpStop.id, to: \PickUp.pickUpStopID) // 5
+//                .filter(\PickUpStop.cityID == id) // 6
+//                .sort(\.deliveryDate, .ascending) // 7
+//                .alsoDecode(PickUpStop.self) // 8
+//                .all().flatMap(to:[PickUpObject].self) { pairs in // 9
+//
+//                return pairs.map { pickUp, pickUpStop -> Future<PickUpObject> in // 10
+//
+//                    return pickUpStop.address.get(on: req).map(to: PickUpObject.self) { address in // 11
+//
+//                        let pickUpStopObject = PickUpStopObject(id: pickUpStop.id, addressID: address.id, street: address.street, postalcode: address.postalcode, city: address.city, country: address.country) // 12
+//
+//
+//
+//
+//                        return PickUpObject(pickUpID: pickUp.id, deliveryDate: pickUp.deliveryDate, timePeriod: pickUp.timePeriod, price: pickUp.price, pickUpStop: pickUpStopObject) // 13
+//                        }
+//                }.flatten(on: req) // 14
+//            }
+//        }
+//    }
+//
 }
 

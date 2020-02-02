@@ -47,7 +47,7 @@ struct CategoryController : RouteCollection {
         adminGroup.post(CategoryLanguagePivot.self, at: "translations", use: createTranslationsHandler) // 3
         categoriesRoute.get(Category.parameter, UUID.parameter, use: getCategoryTranslationsHandler) // 4
         categoriesRoute.get("all", UUID.parameter, use: getAllCategoryTranslationsHandler) // 5
-        categoriesRoute.get(Category.parameter, UUID.parameter, "products", use: getAllProductsWithTranslationsFromCategoryHandler) // 6
+    //    categoriesRoute.get(Category.parameter, UUID.parameter, "products", use: getAllProductsWithTranslationsFromCategoryHandler) // 6
         adminGroup.post(Category.parameter, Product.parameter, use: addProductToCategoryHandler) // 7
     }
 
@@ -164,28 +164,28 @@ struct CategoryController : RouteCollection {
      7. Decode also the another model which was joined to the query. The query will return an array of tuples.
      8. Return all the matching results and unwrap the returned futures.
      9. Return an arrray of ProductWithTranslation models by mapping the returned data and 10. creating an  ProductWithTranslation objects using the fetched data.
-    */
-    func getAllProductsWithTranslationsFromCategoryHandler(_ req: Request) throws -> Future<[ProductWithTranslation]> {
-           
-        return try req.parameters.next(Category.self).flatMap(to: [ProductWithTranslation].self) { category in // 1
-                      
-            let languageID = try req.parameters.next(UUID.self) // 2
-            
-            return try category.products.query(on: req) // 3
-                .join(\ProductLanguagePivot.productID, to: \Product.id) // 4
-                .filter(\ProductLanguagePivot.languageID == languageID) // 5
-                .sort(\ProductLanguagePivot.productName, .ascending) // 6
-                .alsoDecode(ProductLanguagePivot.self) // 7
-                .all().map(to: [ProductWithTranslation].self) { pairs in // 8
-                
-                return pairs.map { product, translation -> ProductWithTranslation in // 9
-                
-                    ProductWithTranslation(id: product.id, price: product.price, images: product.images, productTranslation: translation) // 10
-                }
-            }
-        }
-    }
-    
+//    */
+//    func getAllProductsWithTranslationsFromCategoryHandler(_ req: Request) throws -> Future<[ProductWithTranslation]> {
+//
+//        return try req.parameters.next(Category.self).flatMap(to: [ProductWithTranslation].self) { category in // 1
+//
+//            let languageID = try req.parameters.next(UUID.self) // 2
+//
+//            return try category.products.query(on: req) // 3
+//                .join(\ProductLanguagePivot.productID, to: \Product.id) // 4
+//                .filter(\ProductLanguagePivot.languageID == languageID) // 5
+//                .sort(\ProductLanguagePivot.productName, .ascending) // 6
+//                .alsoDecode(ProductLanguagePivot.self) // 7
+//                .all().map(to: [ProductWithTranslation].self) { pairs in // 8
+//                
+//                return pairs.map { product, translation -> ProductWithTranslation in // 9
+//
+//                    ProductWithTranslation(id: product.id, price: product.price, images: product.images, productTranslation: translation) // 10
+//                }
+//            }
+//        }
+//    }
+//
     /**
      # Add the product to the category.
        

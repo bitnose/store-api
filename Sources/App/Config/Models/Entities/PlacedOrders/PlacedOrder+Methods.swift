@@ -58,58 +58,62 @@ extension PlacedOrder {
      9. Create a new instance of PlacedOrder with the given data and save and return it.
      */
     
-    static func createPlacedOrder(_ req: Request, order: PlacedOrderObject, userID: User.ID) throws -> Future<PlacedOrder> {
-        
-        guard let shippingID = order.pickUpOrderObject?.pickUpID ?? order.homeDeliveryOrderObject?.homeDeliveryID else { throw Abort(.notFound, reason: "The shipping ID is nil.")} // 1
+//    static func createPlacedOrder(_ req: Request, order: PlacedOrderObject, userID: User.ID) throws -> Future<PlacedOrder> {
+//        
+//        guard let shippingID = order.pickUpOrderObject?.pickUpID ?? order.homeDeliveryOrderObject?.homeDeliveryID else { throw Abort(.notFound, reason: "The shipping ID is nil.")} // 1
+//
+//        // 2
+//        return try order.orderItemObject.map { item in
+//            return try Product.calculatePrice(req, count: item.productQuantity, productID: item.productID)
+//        }.flatten(on: req).flatMap(to:  PlacedOrder.self) { prices in // 3
+//            
+//            return try PlacedOrder.calculateShippingFee(on: req, from: shippingID, isHomeDelivery: order.isHomeDelivery).flatMap(to: PlacedOrder.self) { shippingFee in // 4
+//            
+//                var total : Float = shippingFee // 5
+//                      
+//                    for price in prices { // 6
+//                        total = total + price // 7
+//                  }
+//                // TODO: - Calculate total taxes
+//                let taxes = Float(12) // 8
+//            
+//                return PlacedOrder(totalPrice: total, totalTaxes: taxes, deliveryFee: shippingFee, orderStatus: OrderStatus.pendingPayment, userID: userID, isHomeDelivery: order.isHomeDelivery).save(on: req) // )
+//            }
+//        }
+//    }
 
-        // 2
-        return try order.orderItemObject.map { item in
-            return try Product.calculatePrice(req, count: item.productQuantity, productID: item.productID)
-        }.flatten(on: req).flatMap(to:  PlacedOrder.self) { prices in // 3
-            
-            return try PlacedOrder.calculateShippingFee(on: req, from: shippingID, isHomeDelivery: order.isHomeDelivery).flatMap(to: PlacedOrder.self) { shippingFee in // 4
-            
-                var total : Float = shippingFee // 5
-                      
-                    for price in prices { // 6
-                        total = total + price // 7
-                  }
-                // TODO: - Calculate total taxes
-                let taxes = Float(12) // 8
-            
-                return PlacedOrder(totalPrice: total, totalTaxes: taxes, deliveryFee: shippingFee, orderStatus: OrderStatus.pendingPayment, userID: userID, isHomeDelivery: order.isHomeDelivery).save(on: req) // )
-            }
-        }
-    }
-}
-extension PlacedOrder {
-
-    /**
-    # Calculate the shipping fee of the order
-    - parameters:
-        - on: req:  Request
-        - form ID:  The ID of the model: Whether an ID of a HomeDelivery or an ID of a PickUp
-        - isHomeDelivery: Boolean value which determines the type of the shipping
-    - returns: Future Float
-    - throws: Abort error
     
-    1. Look if the value is true.
-    2. Find the HomeDelivery with the given ID. Unwrap the result, throw an error if there was no result.
-    3. Return the price of the delivery.
-    4. If the boolean value is equal to false.
-    5. Find the PickUp with the given ID. Unwrap the result, throw an error if there was no result.
-    6. Return the price of the PickUp.
-    */
-    static func calculateShippingFee(on req: Request, from ID: UUID, isHomeDelivery: Bool) throws -> Future<Float> {
-
-        if isHomeDelivery == true { // 1
-            return HomeDelivery.find(ID, on: req).unwrap(or: Abort(.notFound, reason: "Couldn't find HomeDelivery with the given ID.")).map(to: Float.self) { homeDelivery in // 2
-                return homeDelivery.price // 3
-            }
-        } else { // 4
-            return PickUp.find(ID, on: req).unwrap(or: Abort(.notFound, reason: "Couldn't find PickUp with the given ID.")).map(to: Float.self) { foundPickUp in // 5
-                return foundPickUp.price // 6
-            }
-        }
-    }
+    
+    
 }
+//extension PlacedOrder {
+//
+//    /**
+//    # Calculate the shipping fee of the order
+//    - parameters:
+//        - on: req:  Request
+//        - form ID:  The ID of the model: Whether an ID of a HomeDelivery or an ID of a PickUp
+//        - isHomeDelivery: Boolean value which determines the type of the shipping
+//    - returns: Future Float
+//    - throws: Abort error
+//    
+//    1. Look if the value is true.
+//    2. Find the HomeDelivery with the given ID. Unwrap the result, throw an error if there was no result.
+//    3. Return the price of the delivery.
+//    4. If the boolean value is equal to false.
+//    5. Find the PickUp with the given ID. Unwrap the result, throw an error if there was no result.
+//    6. Return the price of the PickUp.
+//    */
+//    static func calculateShippingFee(on req: Request, from ID: UUID, isHomeDelivery: Bool) throws -> Future<Float> {
+//
+//        if isHomeDelivery == true { // 1
+//            return HomeDelivery.find(ID, on: req).unwrap(or: Abort(.notFound, reason: "Couldn't find HomeDelivery with the given ID.")).map(to: Float.self) { homeDelivery in // 2
+//                return homeDelivery.price // 3
+//            }
+//        } else { // 4
+//            return PickUp.find(ID, on: req).unwrap(or: Abort(.notFound, reason: "Couldn't find PickUp with the given ID.")).map(to: Float.self) { foundPickUp in // 5
+//                return foundPickUp.price // 6
+//            }
+//        }
+//    }
+//}

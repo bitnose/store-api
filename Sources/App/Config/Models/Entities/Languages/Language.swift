@@ -52,6 +52,8 @@ extension Language {
     // Siblings
     var products : Siblings<Language, Product, ProductLanguagePivot> { return siblings()}
     
+    var categories: Siblings<Language, Category, CategoryLanguagePivot> {return siblings()}
+    
     // Parents
                    
     

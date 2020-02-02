@@ -34,16 +34,14 @@ final class PickUp : Codable {
     var createdAt: Date?
     var updatedAt: Date?
     var timePeriod: TimePeriod
-    var price : Float
     var pickUpStopID : PickUpStop.ID
     var limit: Int
     var open: Bool
      
     // Init User
-    init(deliveryDate: Date, timePeriod: TimePeriod, price: Float, pickUpStopID: PickUpStop.ID, limit: Int, open: Bool) {
+    init(deliveryDate: Date, timePeriod: TimePeriod, pickUpStopID: PickUpStop.ID, limit: Int, open: Bool) {
         self.deliveryDate = deliveryDate
         self.timePeriod = timePeriod
-        self.price = price
         self.pickUpStopID = pickUpStopID
         self.limit = limit
         self.open = open
@@ -66,6 +64,7 @@ extension PickUp: Migration {} // Conform Migrations
 extension PickUp {
     
     // Children
+    var prices : Children<PickUp, Price> {return children(\.pickupID)}
 
     // Siblings
     var orders: Siblings<PickUp, PlacedOrder, PickUpOrder> {return siblings()}
